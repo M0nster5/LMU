@@ -21,7 +21,6 @@ private:
     int limit;
     std::vector<double> rates;
     std::vector<double> cummlativeRates;
-
     std::vector< std::vector< double > > data;
 
 
@@ -35,15 +34,11 @@ public:
     
     
     Gillepsie(std::vector<double> vec)
-      // : rates(vec),
-      //  cummlativeRates(rates.size())
-
+      : rates(vec),
+       cummlativeRates(rates.size())
     {
         rates = vec;
-        // std::sort(rates.begin(),rates.end(), std::greater<int>());
         std::sort(rates.begin(),rates.end(), [](double r1, double r2){ return r1 > r2; });
-        // cummlativeRates.resize(rates.size())
-        cummlativeRates = *new std::vector<double>(rates.size());
         std::partial_sum(rates.begin(), rates.end(), cummlativeRates.begin());
         sum = cummlativeRates.back();
     }
@@ -55,7 +50,6 @@ public:
         seed = s;
         limit = l;
     }
-    
     
     void run(){
         double place = 0;
@@ -108,26 +102,15 @@ public:
 };
 
 
+
 int main() {
     // insert code here...
     std::vector<double> myRates{10,10};
     Gillepsie myG(myRates, 1002, 10000);
     myG.run();
     myG.outputData();
-    
-   // system("python /Users/connor/Desktop/C++:Python/Basic Gillespie Algorithm/grapher.py");
-
     return 0;
 }
 
-/*git init
 
-git log
-git status
-git diff
-git branch
-git commit
-git add [-pua]
-
-git stash*/
 
