@@ -1,32 +1,24 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-
+#include <cmath>
 //This only works if the set of rates given is 2^i
 
 
 class Node{
 private:
-	Node* left;
-	Node* right;
-	double rate;
-	double key;
+	Node* left{nullptr};
+	Node* right{nullptr};
+	double rate{0};
+	double key{0};
 public:
-	Node(){
-		left = NULL;
-		right = NULL;
-		rate = 0;
-		key = 0;
-	}
+	Node(void) = default;
 	Node(double r, double k){
-		left = NULL;
-		right = NULL;
 		rate = r;
 		key = k;
 	}
 	Node(Node* l, Node* r){
 		rate = l->getRate() + r->getRate(); 
-		key = 0;
 		left = l;
 		right = r;
 	}
@@ -51,6 +43,10 @@ public:
 		for (int i = 0; i < q.size(); i++){
 			q[i] = new Node(r[i][1],r[i][0]);
 		}
+		double desiredNum = pow(2,ceil(log2(q.size())));
+		while(q.size()!=desiredNum){
+			q.push_back(new Node());
+		}
 		Node* rate1;
 		Node* rate2;
 		while (q.size()>1){
@@ -65,7 +61,9 @@ public:
 		}
 		head = conductor = q[0];
 	}
+
 	double find(double place){
+		conductor = head;
 		while (place<conductor->getRate() && conductor->getRight() != NULL){
 			// std::cout<<conductor->getRate()<<'\n';
 			if (place>conductor->getLeft()->getRate()){
@@ -76,12 +74,12 @@ public:
 			else{
 				conductor = conductor->getLeft();
 				std::cout<<"went left" << '\n';
-
 			}
 		}
 		return conductor->getKey();
 	}
 	Node* getHead(){return head;}
+	double rSum(){return head->getRate();}
 };
 
 

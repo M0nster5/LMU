@@ -5,14 +5,15 @@
 //  Copyright (c) 2015 Connor. All rights reserved.
 //
 
+#include "counter.hh"
 #include <iostream>
 #include <random>
 #include <vector>
 #include <algorithm>
 #include <fstream>
 #include <stdio.h>
-#include "RateStruct.h"
-
+// #include "RateStruct.h"
+#include "BinaryImplementation.h"
 
 
 class Gillepsie{
@@ -23,7 +24,7 @@ private:
     double sum;
     int seed;
     int limit;
-    RateStructure rs;
+    BinaryTree bs;
     std::vector< std::vector< double > > data;
     
 public:
@@ -36,7 +37,7 @@ public:
     
     
     Gillepsie(std::vector< std::vector< double > > r)
-    : rs(r)
+    : bs(r)
     {
         currentTime = 0;
         seed = 0;
@@ -53,7 +54,7 @@ public:
     }
     
     void run(){
-        double sum = rs.getRSum();
+        double sum = bs.rSum();
         double place = 0;
         double deltaT = 0;
         std::mt19937 mt_rand;
@@ -63,7 +64,7 @@ public:
             deltaT = (-log(die()))/sum;
             currentTime+=deltaT;
             place = die()*sum;
-            double vecPos = rs.find(place);
+            double vecPos = bs.find(place);
             std::cout<< place<<" "<<vecPos<<"\n";
             switch ( (int)vecPos )
             {
@@ -97,8 +98,8 @@ public:
         }
     }
     
-    RateStructure getRateStructure(){
-        return rs;
+    BinaryTree getRateStructure(){
+        return bs;
     }
 };
 
@@ -107,8 +108,7 @@ public:
 int main() {
     // insert code here...
     std::vector< std::vector< double > > myRates{{1,10},{2,10},{3,10},{4,10}};
-    Gillepsie myG(myRates, 8877, 100);
-    myG.getRateStructure().printCummulativeRates();    
+    Gillepsie myG(myRates, 8877, 100);    
     myG.run();
     myG.outputData();
     // myG.outputData();
