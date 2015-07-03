@@ -12,61 +12,47 @@
 #include <algorithm>
 #include <fstream>
 #include <stdio.h>
-// #include "RateStruct.h"
-#include "BinaryImplementation.h"
+#include <utility>
+#include "CompRejStruct.h"
 
 
 class Gillepsie{
 private:
-    double currentTime;
     double positionX;
     double positionY;
-    double sum;
-    int seed;
     int limit;
-    BinaryTree bs;
+    Composition c;
     std::vector< std::vector< double > > data;
     
 public:
-    Gillepsie(){
-        currentTime = 0;
-        seed = 0;
-        sum = 0;
-        limit = 100;
-    }
-    
-    
-    Gillepsie(std::vector< std::vector< double > > r)
-    : bs(r)
+    Gillepsie()
+    :c()
     {
-        currentTime = 0;
-        seed = 0;
-        sum = 0;
         limit = 100;
     }
     
     
-    Gillepsie(std::vector< std::vector< double > > vec, int s, int l)
+    Gillepsie(std::vector< std::pair< double,double > > r)
+    : c(r)
+    {
+        limit = 100;
+    }
+    
+    
+    Gillepsie(std::vector< std::pair< double,double > > vec, int l)
     : Gillepsie(vec)
     {
-        seed = s;
         limit = l;
     }
     
     void run(){
-        double sum = bs.rSum();
-        double place = 0;
-        double deltaT = 0;
-        std::mt19937 mt_rand;
-        mt_rand.seed(seed);
-        auto die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
-        while(currentTime<limit){
-            deltaT = (-log(die()))/sum;
-            currentTime+=deltaT;
-            place = die()*sum;
-            double vecPos = bs.find(place);
-            std::cout<< place<<" "<<vecPos<<"\n";
-            switch ( (int)vecPos )
+         while(c.getCurrentTime()<limit){
+            // deltaT = (-log(die()))/sum;
+            // currentTime+=deltaT;
+            // place = die()*sum;
+            // double vecPos = bs.find(place);
+            std::pair<double, double> vecPos = c.selectRate();
+            switch ( (int)vecPos.first )
             {
                 case 1:
                     positionY++;
@@ -83,7 +69,7 @@ public:
                 default:
                     break;
             }
-            data.push_back({currentTime,positionX,positionY});
+            data.push_back({c.getCurrentTime(),positionX,positionY});
         }
     }
     
@@ -98,8 +84,8 @@ public:
         }
     }
     
-    BinaryTree getRateStructure(){
-        return bs;
+    Composition getRateStructure(){
+        return c;
     }
 };
 
@@ -107,11 +93,10 @@ public:
 
 int main() {
     // insert code here...
-    std::vector< std::vector< double > > myRates{{1,10},{2,10},{3,10},{4,10}};
-    Gillepsie myG(myRates, 8877, 100);    
+    std::vector< std::pair< double,double > > myRates{{1,10},{2,10},{3,10},{4,10}};
+    Gillepsie myG(myRates, 1000);    
     myG.run();
     myG.outputData();
-    // myG.outputData();
     return 0;
 }
 

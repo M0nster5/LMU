@@ -1,7 +1,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include <cmath>
+
 //This only works if the set of rates given is 2^i
 
 
@@ -43,10 +43,10 @@ public:
 		for (int i = 0; i < q.size(); i++){
 			q[i] = new Node(r[i][1],r[i][0]);
 		}
-		double desiredNum = pow(2,ceil(log2(q.size())));
-		while(q.size()!=desiredNum){
-			q.push_back(new Node());
-		}
+		// double desiredNum = pow(2,ceil(log2(q.size())));
+		// while(q.size()!=desiredNum){
+		// 	q.push_back(new Node());
+		// }
 		Node* rate1;
 		Node* rate2;
 		while (q.size()>1){

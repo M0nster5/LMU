@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 
+
 class RateStructure{
 private:
     std::vector< std::vector< double > > rateMap;
