@@ -12,24 +12,24 @@ class Group{
 private:
 	int level{0};
 	double gSum{0};
-	std::vector< std::pair<double, int> > elements;
+	std::vector< std::pair<double, std::pair<int, int> > > elements;
 
 public:
 	Group(int l){
 		level = l;
 	}
-	void add(std::pair<double,int> p){
+	void add(std::pair<double,std::pair<int, int> > p){
 		gSum+=p.first;
 		elements.push_back(p);
 	}
-	std::pair<double,int> find(double compMin){
+	std::pair<double,std::pair<int, int> > find(double compMin){
 		double levelHeight = pow(2,level)*compMin;
 		auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 		std::mt19937 mt_rand;
 		mt_rand.seed(seed);
         auto die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
         auto vecPlace = std::bind(std::uniform_int_distribution<int>(0,elements.size()-1), mt_rand);
-        std::pair<double, int> current = elements[vecPlace()];
+        std::pair<double,std::pair<int, int> > current = elements[vecPlace()];
         double place = die() * levelHeight;
         while(current.first<place){
         	current = elements[vecPlace()];
@@ -43,7 +43,7 @@ public:
 		std::cout<<"Level: "<<level<<"\n";
 		std::cout<<"Elements in Goup: ";
 		for (int i = 0; i < elements.size(); i++){
-			std::cout<<elements[i].second<<" "<<elements[i].first<<"\t";
+			std::cout<<"Creature num: "<<elements[i].second.first<<"  Action num: "<<elements[i].second.second <<" "<<elements[i].first<<"\t";
 		}
 		std::cout<<"\n"<<"Group Sum: "<<gSum<<"\n\n";
 	}
@@ -55,13 +55,13 @@ class Composition{
 private:
 	double currentTime{0};
 	double deltaT{0};
-	std::pair<double,int> min{0,0};
+	std::pair<double,std::pair<int, int> > min{0,{0,0}};
 	double groupSums{0};
 	std::vector< Group >  groups;
 public:
 	Composition() = default;
-	Composition(std::vector< std::pair<double,int> > r){
-		min = *std::min_element(std::begin(r),std::end(r),[]( std::pair<double,int> r1, std::pair<double,int> r2){return r1.first<r2.first;});
+	Composition(std::vector< std::pair<double,std::pair<int, int> > > r){
+		min = *std::min_element(std::begin(r),std::end(r),[]( std::pair<double,std::pair<int, int> > r1, std::pair<double,std::pair<int, int> > r2){return r1.first<r2.first;});
 		Group a(1);
 		groups.push_back(a);
 		for (int x = 0; x < r.size(); x++){
@@ -101,7 +101,7 @@ public:
 		return *new Group(0);
 	}
 
-	std::pair<double,double> selectRate(){
+	std::pair<double,std::pair<int, int> > selectRate(){
 		return selectGroup().find(min.first);
 	}
 	double getCurrentTime(){return currentTime;}

@@ -17,7 +17,6 @@
 
 
 using entry = std::pair< double, int >;
-
 //Declare Gillespie class
 class Gillepsie{
 private:
@@ -40,6 +39,7 @@ public:
     Gillepsie(std::vector< entry > r)
     : c(r)
     {
+
         limit = 100;
     }
     
