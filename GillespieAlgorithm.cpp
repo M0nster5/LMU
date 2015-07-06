@@ -4,7 +4,7 @@
 //  Created by Connor on 29/06/15.
 //  Copyright (c) 2015 Connor. All rights reserved.
 //
-
+#include <time.h>       
 #include "counter.hh"
 #include <iostream>
 #include <random>
@@ -16,6 +16,9 @@
 #include "CompRejStruct.h"
 
 
+using entry = std::pair< double, int >;
+
+//Declare Gillespie class
 class Gillepsie{
 private:
     double positionX;
@@ -25,6 +28,8 @@ private:
     std::vector< std::vector< double > > data;
     
 public:
+
+    //initializers
     Gillepsie()
     :c()
     {
@@ -32,27 +37,26 @@ public:
     }
     
     
-    Gillepsie(std::vector< std::pair< double,double > > r)
+    Gillepsie(std::vector< entry > r)
     : c(r)
     {
         limit = 100;
     }
     
     
-    Gillepsie(std::vector< std::pair< double,double > > vec, int l)
+    Gillepsie(std::vector< entry > vec, int l)
     : Gillepsie(vec)
     {
         limit = l;
     }
     
+    //generates output and puts it in data vector
     void run(){
+        COUNT_THIS_SCOPE(__PRETTY_FUNCTION__);
+
          while(c.getCurrentTime()<limit){
-            // deltaT = (-log(die()))/sum;
-            // currentTime+=deltaT;
-            // place = die()*sum;
-            // double vecPos = bs.find(place);
-            std::pair<double, double> vecPos = c.selectRate();
-            switch ( (int)vecPos.first )
+            entry vecPos = c.selectRate();
+            switch ( vecPos.second )
             {
                 case 1:
                     positionY++;
@@ -92,10 +96,14 @@ public:
 
 
 int main() {
-    // insert code here...
-    std::vector< std::pair< double,double > > myRates{{1,10},{2,10},{3,10},{4,10}};
-    Gillepsie myG(myRates, 1000);    
+    clock_t t;
+    std::vector< entry > myRates{{10,1},{10,2},{10,3},{10,4}};
+    Gillepsie myG(myRates, 1000);  
+    t = clock();
+    std::cout<<"working...";
     myG.run();
+    t = clock() - t;
+    std::cout<<"finished running in "<<((float)t)/CLOCKS_PER_SEC<<'\n';
     myG.outputData();
     return 0;
 }

@@ -5,9 +5,9 @@
 
 int main(void)
 {
-	COUNT_THIS_SCOPE(__PRETTY_FUNCTION__);
 	for (int i = 0; i < 100; i+=12) {
 		Counter::ScopeCounter<> sc("bla");
+	COUNT_THIS_SCOPE(__PRETTY_FUNCTION__);
 		std::cout << i << '\n';
 		sc("main loop 2");
 	}

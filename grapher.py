@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
-
+#open text file
 file = open("output.txt",'r')
+#put columns 0, 1, 2 in variables t, x, y
 t, x, y = np.loadtxt(file, usecols=(0, 1, 2), unpack=True)
 evenT = np.linspace(0,5,len(t))
 cmap = cm.jet
