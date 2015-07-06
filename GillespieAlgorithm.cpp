@@ -4,7 +4,7 @@
 //  Created by Connor on 29/06/15.
 //  Copyright (c) 2015 Connor. All rights reserved.
 //
-
+#include <time.h>
 #include "counter.hh"
 #include <iostream>
 #include <random>
@@ -107,9 +107,13 @@ public:
 
 int main() {
     // insert code here...
+    clock_t t;
     std::vector< std::vector< double > > myRates{{1,10},{2,10},{3,10},{4,10}};
-    Gillepsie myG(myRates, 8877, 100);    
+    Gillepsie myG(myRates, 8877, 1000);
+    t = clock();    
     myG.run();
+    t = clock() - t;
+    std::cout<<"Finished in "<<((float)t)/CLOCKS_PER_SEC;
     myG.outputData();
     // myG.outputData();
     return 0;
