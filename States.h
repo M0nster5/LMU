@@ -3,15 +3,39 @@
 #include <map>
 #include <vector>
 
-class Creature{
+class States{
 private:
-	std::map<std::string, int> myStates;
+	std::map<std::string, double> myStates{};
 
 public:
-	Creature(std::vector<std::string> states){
+	States() = default;
+	States(std::vector<std::string> states){
 		for (int i = 0; i<states.size();i++){
 			myStates[states[i]]=0;
 		}
 	}
+
+	void initialize(std::vector<std::string> states){
+		for (int i = 0; i<states.size();i++){
+			myStates[states[i]]=0;
+		}
+	}
+	void increment(int reference){
+		        switch(reference){
+                case 1:
+                    myStates["positionX"]++;
+                    break;
+                case 2:
+                    myStates["positionX"]--;
+                    break;
+                default:
+                    break;
+            }
+	}
+	int size(){return myStates.size();}
+	double get(std::string a){
+		return myStates.at(a);
+	}
+	void set(double pX){myStates["positionX"] = pX;}
 
 };

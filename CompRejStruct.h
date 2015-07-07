@@ -5,7 +5,7 @@
 #include <cmath>
 #include <random>
 #include <chrono>
-
+// #include <usr/local/Cellar/boost/test/included/unit_test.hpp>
 
 
 class Group{
@@ -38,6 +38,7 @@ public:
         return current;
 	}
 	double getGSum(){return gSum;}
+
 
 	void printAll(){
 		std::cout<<"Level: "<<level<<"\n";
@@ -82,8 +83,31 @@ public:
 			groups[i].printAll();
 		}
 	}
+	void updateGroupSums(){
+		groupSums = 0;		
+		for (int i = 0; i<groups.size(); i++){
+			groupSums += groups[i].getGSum();
+		}
+	}
+
+	void addRate(std::pair<double,std::pair<int, int> > p){
+		if (p.first<min.first){
+			min = p;
+		}
+		for (int y = 0; y < groups.size();y++){
+			if (p.first<pow(2,y+1)*min.first){
+				//std::cout<<"should have added: "<<p.first<<" "<<p.second.first<<" "<<p.second.second<<"   to group: "<<y<<"\n";
+				groups[y].add(p);
+				break;
+			}
+			else if (y == groups.size()-1)
+				groups.push_back(*new Group(y+2));
+		}
+		updateGroupSums();
+	}
 
 	Group selectGroup(){
+		updateGroupSums();
 		auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 		std::mt19937 mt_rand;
 		mt_rand.seed(seed);
@@ -100,6 +124,7 @@ public:
 		}
 		return *new Group(0);
 	}
+
 
 	std::pair<double,std::pair<int, int> > selectRate(){
 		return selectGroup().find(min.first);
