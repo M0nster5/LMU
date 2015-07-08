@@ -63,10 +63,14 @@ public:
             if (vecPos.second.second>2){
                 if (vecPos.second.second==3){
                     addCreature(creatures[vecPos.second.first-1].get("positionX"));
-                    std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {.2,{creatures.size(),3}} };
+                    std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {.5,{creatures.size(),3}} };
                     for (int i = 0; i<nCreature.size();i++){
                         c.addRate(nCreature[i]);
                     }
+                }
+                else{
+                    c.deleteC(vecPos.second.first);
+                    deleteCreature(vecPos.second.first-1);
                 }
             }
             else
@@ -83,6 +87,9 @@ public:
         creature.initialize(rStrings);
         creature.set(currentPos);
         creatures.push_back(creature);
+    }
+    void deleteCreature(int index){
+        creatures.erase(creatures.begin()+index);
     }
 
     void outputData(){
@@ -105,8 +112,8 @@ public:
 
 int main() {
     clock_t t;
-    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}},{.25,{1,3}}};
-    Gillepsie myG(1,{"positionX"},myRates, 4);  
+    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}},{.5,{1,3}}};
+    Gillepsie myG(1,{"positionX"},myRates, 8);  
     t = clock();
     std::cout<<"working...";
     myG.run();

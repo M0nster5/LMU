@@ -5,14 +5,9 @@
 #include "CompRejStruct.h"
 
 int main(){
-	std::vector< std::pair<double,double> > myRates{{1,10},{2,10},{3,10},{4,10},{5,100}};
+	std::vector< std::pair<double,std::pair<int,int> > >myRates{{10,{1,1}},{10,{2,2}},{2,{2,3}}};
 	Composition c(myRates);
+	c.deleteC(2);
 	c.printGroups();
-	for (int i = 0; i<10;i++){
-		std::pair<double, double> random = c.selectRate();
-		std::cout<< random.first<<" "<<random.second;
-	}
-
-
 	return 0;
 }

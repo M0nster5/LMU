@@ -23,10 +23,10 @@ public:
 	void increment(int reference){
 		        switch(reference){
                 case 1:
-                    myStates["positionX"]++;
+                    myStates["positionX"]+=5;
                     break;
                 case 2:
-                    myStates["positionX"]--;
+                    myStates["positionX"]-=5;
                     break;
                 default:
                     break;
