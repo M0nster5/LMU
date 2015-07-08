@@ -24,6 +24,7 @@ public:
 		elements.push_back(p);
 	}
 	std::pair<double,std::pair<int, int> > find(double compMin){
+		updateGSum();
 		double levelHeight = pow(2,level)*compMin;
 		auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 		std::mt19937 mt_rand;
@@ -106,6 +107,7 @@ public:
 			std::cout<<i<<"\n";  
 			groups[i].printAll();
 		}
+		std::cout<<"\nGroupSums: "<<groupSums<<"\n-------------------------------------------";
 	}
 	void updateGroupSums(){
 		groupSums = 0;		
@@ -155,8 +157,9 @@ public:
 				groups[x].updateGSum();
 			}
 		}
+		updateGroupSums();
 	}
-
+	double getGroupSums(){return groupSums;}
 
 	std::pair<double,std::pair<int, int> > selectRate(){
 		return selectGroup().find(min.first);

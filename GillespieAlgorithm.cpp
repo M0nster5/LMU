@@ -55,31 +55,32 @@ public:
     
     //generates output and puts it in data vector
     void run(){
-        std::cout<<"hello";
-        while(c.getCurrentTime()<limit){
+        while(c.getCurrentTime()<limit&&c.getGroupSums()>0){
+            //std::cout<<"\nsize: "<<creatures.size()<<"\n";
+            //c.printGroups();
             //std::cout<<c.getCurrentTime()<<" "<<limit<<std::endl;
             entry vecPos = c.selectRate();
             //std::cout<<vecPos.first<<" "<<vecPos.second.first<<" "<<vecPos.second.second<<"\n";
             if (vecPos.second.second>2){
                 if (vecPos.second.second==3){
                     addCreature(creatures[vecPos.second.first-1].get("positionX"));
-                    std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {.5,{creatures.size(),3}} };
+                    std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {1,{creatures.size(),3}},{.25,{creatures.size(),4}} };
                     for (int i = 0; i<nCreature.size();i++){
                         c.addRate(nCreature[i]);
                     }
                 }
                 else{
                     c.deleteC(vecPos.second.first);
-                    deleteCreature(vecPos.second.first-1);
                 }
             }
-            else
-                creatures[vecPos.second.first-1].increment(vecPos.second.second);
+            creatures[vecPos.second.first-1].increment(vecPos.second.second);
             for (int x = 0; x<creatures.size();x++){
                // std::cout<<"creature "<<x+1<<" position "<<creatures[x].get("positionX")<<"\n";
-                data.push_back({c.getCurrentTime(),creatures[x].get("positionX")});
+                if (creatures[x].get("dead")!=1)
+                    data.push_back({c.getCurrentTime(),creatures[x].get("positionX")});
             }
         }
+       // std::cout<<"final size: "<<creatures.size();
     }
     
     void addCreature(double currentPos){
@@ -112,8 +113,8 @@ public:
 
 int main() {
     clock_t t;
-    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}},{.5,{1,3}}};
-    Gillepsie myG(1,{"positionX"},myRates, 8);  
+    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}},{1,{1,3}}, {.25,{1,4}} };
+    Gillepsie myG(1,{"positionX","dead"},myRates, 5);  
     t = clock();
     std::cout<<"working...";
     myG.run();
