@@ -16,7 +16,7 @@
 #include "CompRejStruct.h"
 
 
-using entry = std::pair< double, int >;
+using entry = std::pair< double, std::pair<int,int > >;
 //Declare Gillespie class
 class Gillepsie{
 private:
@@ -56,7 +56,7 @@ public:
 
          while(c.getCurrentTime()<limit){
             entry vecPos = c.selectRate();
-            switch ( vecPos.second )
+            switch ( vecPos.second.second )
             {
                 case 1:
                     positionY++;
@@ -97,7 +97,7 @@ public:
 
 int main() {
     clock_t t;
-    std::vector< entry > myRates{{10,1},{10,2},{10,3},{10,4}};
+    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}},{10,{1,3}},{10,{1,4}}};
     Gillepsie myG(myRates, 1000);  
     t = clock();
     std::cout<<"working...";
