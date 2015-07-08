@@ -5,6 +5,7 @@
 #include <cmath>
 #include <random>
 #include <chrono>
+#include "counter.hh"
 // #include <usr/local/Cellar/boost/test/included/unit_test.hpp>
 
 
@@ -33,7 +34,9 @@ public:
         auto vecPlace = std::bind(std::uniform_int_distribution<int>(0,elements.size()-1), mt_rand);
         std::pair<double,std::pair<int, int> > current = elements[vecPlace()];
         double place = die() * levelHeight;
+        Counter::ScopeCounter<> sc("find func");
         while(current.first<place){
+        	sc("main while loop");
         	current = elements[vecPlace()];
         	place = die() * levelHeight;
         }

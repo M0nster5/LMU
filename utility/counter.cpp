@@ -1,7 +1,6 @@
 #include <iomanip>
 #include <vector>
 #include <algorithm>
-
 #include "counter.hh"
 
 namespace Counter {

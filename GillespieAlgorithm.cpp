@@ -3,7 +3,8 @@
 //
 //  Created by Connor on 29/06/15.
 //  Copyright (c) 2015 Connor. All rights reserved.
-//
+//compile with g++ -DHAVE_COUNTERS=1 --std=c++11 GillespieAlgorithm.cpp counter.cpp -o GillespieAlgorithm
+
 #include <time.h>       
 #include "counter.hh"
 #include <iostream>
