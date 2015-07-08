@@ -13,7 +13,7 @@
 #include <fstream>
 #include <stdio.h>
 #include <utility>
-#include "CompRejStruct.h"
+#include "BinaryImplementation.h"
 #include "States.h"
 
 using entry = std::pair< double, std::pair<int,int> >;
@@ -23,21 +23,21 @@ private:
     std::vector< States > creatures;
     std::vector< std::string > rStrings;
     int limit;
-    Composition c;
+    BinaryTree bt;
     std::vector< std::vector< double > > data;
     
 public:
 
     //initializers
     Gillepsie()
-    :c()
+    :bt()
     {
         limit = 100;
     }
     
     
     Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > r)
-    : c(r), creatures(numCreatures)
+    : bt(r), creatures(numCreatures)
     {
         rStrings = states;
         for (int i = 0; i<numCreatures;i++){
@@ -55,6 +55,8 @@ public:
     
     //generates output and puts it in data vector
     void run(){
+
+                
         while(c.getCurrentTime()<limit&&c.getGroupSums()>0){
             //std::cout<<"\nsize: "<<creatures.size()<<"\n";
             //c.printGroups();
