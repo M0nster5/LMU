@@ -72,7 +72,7 @@ public:
             if (vecPos.second.second>2){
                 if (vecPos.second.second==3){
                     addCreature(creatures[vecPos.second.first-1].get("positionX"));
-                    std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {2,{creatures.size(),3}},{1,{creatures.size(),4}} };
+                    std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {.5,{creatures.size(),3}},{.25,{creatures.size(),4}} };
                     for (int i = 0; i<nCreature.size();i++){
                         bt.insert(nCreature[i]);
                     }
@@ -120,8 +120,8 @@ public:
 
 int main() {
     clock_t t;
-    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}},{2,{1,3}}, {1,{1,4}} };
-    Gillepsie myG(1,{"positionX","dead"},myRates, 239123244,5);  
+    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {.5,{1,3}}, {.25,{1,4}} };
+    Gillepsie myG(1,{"positionX","dead"},myRates, 239131124334,10);  
     t = clock();
     std::cout<<"working...";
     myG.run();
