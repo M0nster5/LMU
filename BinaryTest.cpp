@@ -16,8 +16,11 @@ int main(){
 	bs.prettyPrint(bs.getHead(), id);
 	bs.remove(1, bs.getHead());
 	id = 0;
+	bs.insert({7,{2,1}});
 	std::cout<<"\n\n";
-	bs.remove(2, bs.getHead());	
+	bs.prettyPrint(bs.getHead(), id);
+	std::cout<<"\n\n";
+	//bs.remove(2, bs.getHead());	
 	// Node* head = bs.getHead();
 	return 0;
 }

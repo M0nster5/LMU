@@ -56,23 +56,23 @@ public:
     //generates output and puts it in data vector
     void run(){
 
-                
-        while(c.getCurrentTime()<limit&&c.getGroupSums()>0){
+
+        while(bt.getCurrentTime()<limit&&bt.getGroupSums()>0){
             //std::cout<<"\nsize: "<<creatures.size()<<"\n";
             //c.printGroups();
             //std::cout<<c.getCurrentTime()<<" "<<limit<<std::endl;
-            entry vecPos = c.selectRate();
+            entry vecPos = bt.find();
             //std::cout<<vecPos.first<<" "<<vecPos.second.first<<" "<<vecPos.second.second<<"\n";
             if (vecPos.second.second>2){
                 if (vecPos.second.second==3){
                     addCreature(creatures[vecPos.second.first-1].get("positionX"));
                     std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {1,{creatures.size(),3}},{.25,{creatures.size(),4}} };
                     for (int i = 0; i<nCreature.size();i++){
-                        c.addRate(nCreature[i]);
+                        bt.insert(nCreature[i]);
                     }
                 }
                 else{
-                    c.deleteC(vecPos.second.first);
+                    bt.remove(vecPos.second.first);
                 }
             }
             creatures[vecPos.second.first-1].increment(vecPos.second.second);
@@ -107,10 +107,9 @@ public:
     }
     
     Composition getRateStructure(){
-        return c;
+        return bt;
     }
 };
-
 
 
 int main() {

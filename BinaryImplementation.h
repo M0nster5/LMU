@@ -43,27 +43,19 @@ private:
 	Node* head;
 	Node* conductor;
 public: 
-
+	//create an empty binary tree.
 	BinaryTree(){
-		head = conductor = NULL;
+		head = conductor = nullptr;
 	}
-
+	//construct special tree for Gillespie such that leaves are rates and parents are sums
 	BinaryTree(std::vector< std::pair<double,std::pair<int,int> > > r){
 		std::vector< Node* > q(r.size());
 		for (int i = 0; i < q.size(); i++){
 			q[i] = new Node(r[i].first,r[i].second);
 		}
-		// double desiredNum = pow(2,ceil(log2(q.size())));
-		// while(q.size()!=desiredNum){
-		// 	q.push_back(new Node());
-		// }
 		Node* rate1;
 		Node* rate2;
 		while (q.size()>1){
-			for (int i = 0; i<q.size() ; i++){
-				//std::cout<<q[i]->getRate()<<" ";
-			}
-			//std::cout<<'\n';
 			rate1 = q.front(); q.erase(q.begin());
 			rate2 = q.front(); q.erase(q.begin());
 			Node* parent = new Node(rate1,rate2);
@@ -71,6 +63,19 @@ public:
 		}
 		head = conductor = q[0];
 	}
+
+
+	//special insert method given a tree like:
+//			       5
+//			     /  \   
+//			    3    2    
+
+	//that is supposed to insert new element 6 it will try to balance the tree by puttin it on the side that has less
+//			      11
+//			     /  \   
+//			    3    8    
+//				    / \
+//			       2   6  		
 
 	void insert(std::pair<double,std::pair<int,int> > a){
 		conductor = head;
@@ -91,6 +96,21 @@ public:
 		conductor = head;
 	}
 	
+//special remove func that given a binary tree such as
+//			      11
+//			     /  \   
+//			    3    8    
+//				    / \
+//			       2   6  	
+//with the purpose of removing 6
+//will remove it like so
+//			       5
+//			     /  \   
+//			    3    2
+//	and if it need to remove 2 it would change to this		    
+//			       3
+//			     /  \   
+//			  null   null  		       		
 	void remove(int creatureNum, Node* temp){
 		// conductor = head;
 		std::cout<<"\n\n";
@@ -141,12 +161,11 @@ public:
 		remove(creatureNum, temp->getRight());
 	}
 
-
+//checks to see if two nodes rates and keys are equal
 	bool equals(Node* a, Node* b){
 		return a->getRate() == b->getRate() && a->getKey() == b->getKey();
 	}
-
-
+//will update all parent nodes by adding the increment to their rate val
 	void update(Node* updatePoint,double increment){
 		if (updatePoint == nullptr) return;
 		updatePoint->setRate(updatePoint->getRate()+increment);
@@ -154,10 +173,10 @@ public:
 			update(updatePoint->getParent(),increment);
 	}
 
-
+//checks to see if the conductor is a leaf
 	bool isLeaf(){return conductor->getLeft()==NULL && conductor->getRight()==NULL;}
 
-
+//Gillespie step
 	std::pair<int,int> find(){
 		conductor = head;
 		auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -182,7 +201,7 @@ public:
 		return conductor->getKey();
 	}
 
-
+//prints all nodes in the tree
 	void prettyPrint(Node* x, int & id){
 		if (!x) return;
 		prettyPrint(x->getLeft(),id);
