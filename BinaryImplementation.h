@@ -38,8 +38,6 @@ public:
 
 class BinaryTree{
 private:
-	double deltaT;
-	double currentTime;
 	Node* head;
 	Node* conductor;
 public: 
@@ -113,20 +111,20 @@ public:
 //			  null   null  		       		
 	void remove(int creatureNum, Node* temp){
 		// conductor = head;
-		std::cout<<"\n\n";
+		//std::cout<<"\n\n";
 		int id = 0;
-		prettyPrint(head,id);
+		//prettyPrint(head,id);
 		if (temp == nullptr)
 			return;
 		if(temp->getLeft()==NULL && temp->getRight()==NULL && temp->getKey().first==creatureNum){
-			std::cout<<"found: "<<temp->getRate()<<" "<<temp->getKey().first<<" "<<temp->getKey().second<<"\n";
+			//std::cout<<"found: "<<temp->getRate()<<" "<<temp->getKey().first<<" "<<temp->getKey().second<<"\n";
 			if (temp->getParent()==nullptr) {
 				head = conductor = nullptr;
 				return;
 			}
-			else std::cout<<"ok"<<std::flush;
+			//else std::cout<<"ok"<<std::flush;
 			if (equals(temp, temp->getParent()->getLeft())){
-				std::cout<<"switching right to parent";
+				//std::cout<<"switching right to parent";
 				Node* parentR = temp->getParent()->getRight();
 				parentR->setParent(temp->getParent()->getParent());
 				if (parentR->getParent()==nullptr){
@@ -141,9 +139,9 @@ public:
 				update(parentR->getParent(),-temp->getRate());
 			}
 			else{
-				std::cout<<"switching left to parent\n";
+				//std::cout<<"switching left to parent\n";
 				Node* parentL = temp->getParent()->getLeft();
-				std::cout<<"parentL: "<< parentL->getRate()<<" "<<parentL->getKey().first<<"\n";
+				//std::cout<<"parentL: "<< parentL->getRate()<<" "<<parentL->getKey().first<<"\n";
 				parentL->setParent(temp->getParent()->getParent());
 				if (parentL->getParent()==nullptr){
 					head = conductor = parentL;
@@ -177,28 +175,21 @@ public:
 	bool isLeaf(){return conductor->getLeft()==NULL && conductor->getRight()==NULL;}
 
 //Gillespie step
-	std::pair<int,int> find(){
+	std::pair<double,std::pair<int,int> > find(double place){
 		conductor = head;
-		auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-		std::mt19937 mt_rand;
-		mt_rand.seed(seed);
-		auto die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
-	    deltaT = (-log(die()))/rSum();
-        currentTime+=deltaT;
-        double place = die()*rSum();
 		while (place<conductor->getRate() && conductor->getRight() != NULL){
 			// std::cout<<conductor->getRate()<<'\n';
 			if (place>conductor->getLeft()->getRate()){
 				place -= conductor->getLeft()->getRate();
 				conductor = conductor->getRight();
-				std::cout<<"went right" << '\n';
+				//std::cout<<"went right" << '\n';
 			}
 			else{
 				conductor = conductor->getLeft();
-				std::cout<<"went left" << '\n';
+				//std::cout<<"went left" << '\n';
 			}
 		}
-		return conductor->getKey();
+		return {conductor->getRate(),conductor->getKey()};
 	}
 
 //prints all nodes in the tree
