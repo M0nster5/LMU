@@ -49,13 +49,13 @@ public:
 		}
 		std::cout<<"\n"<<"Group Sum: "<<gSum<<"\n\n";
 	}
-	bool hasCreature(double identifier){
-		return std::find_if(std::begin(elements),std::end(elements),[&](std::pair<double, std::pair<int, int> > element){return element.second.first == identifier;})!=elements.end();
-	}
+	// bool hasCreature(double identifier){
+	// 	return std::find_if(std::begin(elements),std::end(elements),[&](std::pair<double, std::pair<int, int> > element){return element.second.first == identifier;})!=elements.end();
+	// }
 
-	void remove(int group){
-		elements.erase(std::remove_if(elements.begin(),elements.end(),[&](std::pair<double, std::pair<int, int> > element){return element.second.first == group; } ));
-	}
+	// void remove(int group){
+	// 	elements.erase(std::remove_if(elements.begin(),elements.end(),[&](std::pair<double, std::pair<int, int> > element){return element.second.first == group; } ));
+	// }
 	void updateGSum(){
 		gSum = 0;
 		for (int i = 0; i<elements.size();i++){
@@ -114,21 +114,21 @@ public:
 		}
 	}
 
-	void addRate(std::pair<double,std::pair<int, int> > p){
-		if (p.first<min.first){
-			min = p;
-		}
-		for (int y = 0; y < groups.size();y++){
-			if (p.first<pow(2,y+1)*min.first){
-				//std::cout<<"should have added: "<<p.first<<" "<<p.second.first<<" "<<p.second.second<<"   to group: "<<y<<"\n";
-				groups[y].add(p);
-				break;
-			}
-			else if (y == groups.size()-1)
-				groups.push_back(*new Group(y+2));
-		}
-		updateGroupSums();
-	}
+	// void addRate(std::pair<double,std::pair<int, int> > p){
+	// 	if (p.first<min.first){
+	// 		min = p;
+	// 	}
+	// 	for (int y = 0; y < groups.size();y++){
+	// 		if (p.first<pow(2,y+1)*min.first){
+	// 			//std::cout<<"should have added: "<<p.first<<" "<<p.second.first<<" "<<p.second.second<<"   to group: "<<y<<"\n";
+	// 			groups[y].add(p);
+	// 			break;
+	// 		}
+	// 		else if (y == groups.size()-1)
+	// 			groups.push_back(*new Group(y+2));
+	// 	}
+	// 	updateGroupSums();
+	// }
 
 	Group selectGroup(){
 		updateGroupSums();
@@ -148,14 +148,14 @@ public:
 		}
 		return *new Group(0);
 	}
-	void deleteC(double identifier){
-		for (int x = 0; x<groups.size();x++){
-			while(groups[x].hasCreature(identifier)){
-				groups[x].remove(identifier);
-				groups[x].updateGSum();
-			}
-		}
-	}
+	// void deleteC(double identifier){
+	// 	for (int x = 0; x<groups.size();x++){
+	// 		while(groups[x].hasCreature(identifier)){
+	// 			groups[x].remove(identifier);
+	// 			groups[x].updateGSum();
+	// 		}
+	// 	}
+	// }
 
 
 	std::pair<double,std::pair<int, int> > selectRate(){
