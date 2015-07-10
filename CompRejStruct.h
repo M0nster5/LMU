@@ -34,12 +34,15 @@ public:
         auto vecPlace = std::bind(std::uniform_int_distribution<int>(0,elements.size()-1), mt_rand);
         std::pair<double,std::pair<int, int> > current = elements[vecPlace()];
         double place = die() * levelHeight;
-        Counter::ScopeCounter<> sc("find func");
+        COUNT_THIS_SCOPE(__PRETTY_FUNCTION__);
+        int count = 0;
         while(current.first<place){
-        	sc("main while loop");
-        	current = elements[vecPlace()];
+        	count++;
+        	// Counter::ScopeCounter<> sc("main loop");
+            current = elements[vecPlace()];
         	place = die() * levelHeight;
         }
+        std::cout<<count<<"\n";
         return current;
 	}
 	double getGSum(){return gSum;}
@@ -120,9 +123,9 @@ public:
 	}
 
 	void addRate(std::pair<double,std::pair<int, int> > p){
-		if (p.first<min.first){
-			min = p;
-		}
+		// if (p.first<min.first){
+		// 	min = p;
+		// }
 		for (int y = 0; y < groups.size();y++){
 			if (p.first<pow(2,y+1)*min.first){
 				//std::cout<<"should have added: "<<p.first<<" "<<p.second.first<<" "<<p.second.second<<"   to group: "<<y<<"\n";
@@ -151,7 +154,8 @@ public:
 			else
 				place-=groups[i].getGSum();
 		}
-		return *new Group(0);
+		//fix this 
+		return Group(0);
 	}
 	void deleteC(double identifier){
 		for (int x = 0; x<groups.size();x++){
