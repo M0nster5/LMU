@@ -88,7 +88,7 @@ public:
                     data.push_back({currentTime,creatures[x].get("positionX")});
             }
         }
-       // std::cout<<"final size: "<<creatures.size();
+        std::cout<<"final size: "<<creatures.size();
     }
     
     void addCreature(double currentPos){

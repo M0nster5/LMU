@@ -54,9 +54,9 @@ public:
 	bool hasCreature(double identifier){
 		return std::find_if(std::begin(elements),std::end(elements),[&](std::pair<double, std::pair<int, int> > element){return element.second.first == identifier;})!=elements.end();
 	}
-
-	void remove(int group){
-		elements.erase(std::remove_if(elements.begin(),elements.end(),[&](std::pair<double, std::pair<int, int> > element){return element.second.first == group; } ));
+//fix this
+	void remove(int creatureNum){
+		elements.erase(std::remove_if(elements.begin(),elements.end(),[&](std::pair<double, std::pair<int, int> > element){return element.second.first == creatureNum; } ));
 	}
 	void updateGSum(){
 		gSum = 0;
@@ -80,8 +80,7 @@ public:
 	Composition(std::vector< std::pair<double,std::pair<int, int> > > r){
 		min = *std::min_element(std::begin(r),std::end(r),[]( std::pair<double,std::pair<int, int> > r1, std::pair<double,std::pair<int, int> > r2){return r1.first<r2.first;});
 		std::cout<<min.first<<"\n";
-		Group a(1);
-		groups.push_back(a);
+		groups.emplace_back(1);
 		for (int x = 0; x < r.size(); x++){
 			for (int y = 0; y < groups.size();y++){
 				if (r[x].first<pow(2,y+1)*min.first){
@@ -90,7 +89,7 @@ public:
 				}
 				else if(y == groups.size()-1)
 				{
-					Group a = *new Group(y+2);
+					Group a(y+2);
 					std::cout<<a.getGSum()<<"\n";
 					groups.push_back(a);
 				}
@@ -116,11 +115,8 @@ public:
 			groupSums += groups[i].getGSum();
 		}
 	}
-
+//fix this
 	void addRate(std::pair<double,std::pair<int, int> > p){
-		if (p.first<min.first){
-			min = p;
-		}
 		for (int y = 0; y < groups.size();y++){
 			if (p.first<pow(2,y+1)*min.first){
 				//std::cout<<"should have added: "<<p.first<<" "<<p.second.first<<" "<<p.second.second<<"   to group: "<<y<<"\n";
@@ -128,33 +124,11 @@ public:
 				break;
 			}
 			else if (y == groups.size()-1)
-				groups.push_back(*new Group(y+2));
+				groups.emplace_back(y+2);
 		}
 		updateGroupSums();
 	}
-	void updateGroupSums(){
-		groupSums = 0;		
-		for (int i = 0; i<groups.size(); i++){
-			groupSums += groups[i].getGSum();
-		}
-	}
-
-	void addRate(std::pair<double,std::pair<int, int> > p){
-		if (p.first<min.first){
-			min = p;
-		}
-		for (int y = 0; y < groups.size();y++){
-			if (p.first<pow(2,y+1)*min.first){
-				//std::cout<<"should have added: "<<p.first<<" "<<p.second.first<<" "<<p.second.second<<"   to group: "<<y<<"\n";
-				groups[y].add(p);
-				break;
-			}
-			else if (y == groups.size()-1)
-				groups.push_back(*new Group(y+2));
-		}
-		updateGroupSums();
-	}
-
+//fix this
 	Group selectGroup(){
 		updateGroupSums();
 		auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -171,11 +145,12 @@ public:
 			else
 				place-=groups[i].getGSum();
 		}
-		return *new Group(0);
+		return Group(0);
 	}
-	void deleteC(double identifier){
+	void deleteC(int identifier){
 		for (int x = 0; x<groups.size();x++){
 			while(groups[x].hasCreature(identifier)){
+				//fix this
 				groups[x].remove(identifier);
 				groups[x].updateGSum();
 			}
