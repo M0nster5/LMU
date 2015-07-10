@@ -43,17 +43,9 @@ public:
 		for (int i = 0; i < q.size(); i++){
 			q[i] = new Node(r[i][1],r[i][0]);
 		}
-		double desiredNum = pow(2,ceil(log2(q.size())));
-		while(q.size()!=desiredNum){
-			q.push_back(new Node());
-		}
 		Node* rate1;
 		Node* rate2;
 		while (q.size()>1){
-			for (int i = 0; i<q.size() ; i++){
-				std::cout<<q[i]->getRate()<<" ";
-			}
-			std::cout<<'\n';
 			rate1 = q.front(); q.erase(q.begin());
 			rate2 = q.front(); q.erase(q.begin());
 			Node* parent = new Node(rate1,rate2);
