@@ -47,19 +47,9 @@ public:
 	}
 	//construct special tree for Gillespie such that leaves are rates and parents are sums
 	BinaryTree(std::vector< std::pair<double,std::pair<int,int> > > r){
-		std::vector< Node* > q(r.size());
-		for (int i = 0; i < q.size(); i++){
-			q[i] = new Node(r[i].first,r[i].second);
-		}
-		Node* rate1;
-		Node* rate2;
-		while (q.size()>1){
-			rate1 = q.front(); q.erase(q.begin());
-			rate2 = q.front(); q.erase(q.begin());
-			Node* parent = new Node(rate1,rate2);
-			q.push_back(parent);
-		}
-		head = conductor = q[0];
+		head = conductor = new Node(r[0].first,r[0].second);
+		for (int i = 1; i<r.size();i++)
+			insert(r[i]);
 	}
 
 

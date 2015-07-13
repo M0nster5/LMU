@@ -39,7 +39,7 @@ public:
     }
     
     
-    Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > r,int s)
+    Gillepsie(int numCreat.;ures, std::vector<std::string> states, std::vector< entry > r,int s)
     : bt(r), creatures(numCreatures)
     {
         seed = s;
