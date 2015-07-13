@@ -132,10 +132,10 @@ int main() {
     std::vector< entry > myRates{{10,{1,1}},{10,{1,2}},{1,{1,3}}, {.25,{1,4}} };
 
     std::mt19937 mt_rand;
-    mt_rand.seed(19999);
+    mt_rand.seed(192212299);
     std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1),mt_rand);
 
-    Gillepsie myG(1,{"positionX","dead"},myRates, die, 11);  
+    Gillepsie myG(1,{"positionX","dead"},myRates, die, 5);  
 
     t = clock();
     std::cout<<"working...";
@@ -143,7 +143,7 @@ int main() {
     t = clock() - t;
     std::cout<<"finished running in "<<((float)t)/CLOCKS_PER_SEC<<'\n';
     std::cout<<"rate size: "<<myG.rateSize()<<"\n";
-    //myG.outputData();
+    myG.outputData();
     return 0;
 }
 
