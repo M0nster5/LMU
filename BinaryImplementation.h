@@ -69,15 +69,20 @@ public:
 		conductor = head;
 			// head = conductor = new Node(head, new Node(a.first,a.second));
 			while(!isLeaf()){
-				if (a.first>head->getLeft()->getRate()&&a.first>head->getRight()->getRate()){
+				if (a.first>conductor->getLeft()->getRate()&&a.first>conductor->getRight()->getRate()){
 					if (conductor == head){
 						head = conductor = new Node(head, new Node(a.first,a.second));
 					}
 					else{
 						Node* nPP = conductor->getParent();
 						Node* nParent = new Node(conductor, new Node(a.first,a.second));
+						if (equals(conductor, nPP->getLeft()))
+							nPP->setLeft(nParent);
+						else
+							nPP->setRight(nParent);
 						nParent->setParent(nPP);
 						update(nPP,(nPP->getLeft()->getRate()+nPP->getRight()->getRate())-nPP->getRate());
+						conductor = head;
 					}
 					return;
 				}
