@@ -10,7 +10,7 @@ cmap = cm.jet
 fig = plt.figure(1)
 fig.clf()
 ax = fig.add_subplot(1,1,1)
-ax.scatter(t,x,c=evenT,cmap=cmap, alpha = .01)
+ax.scatter(t,x,c=evenT,cmap=cmap)
 # plt.xlabel("X")
 # plt.ylabel("Y")
 plt.show()

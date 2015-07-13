@@ -37,8 +37,8 @@ public:
     }
     
     
-    Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > r)
-    : c(r), creatures(numCreatures)
+    Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > r,std::function<double()> die)
+    : c(r,die), creatures(numCreatures)
     {
         rStrings = states;
         for (int i = 0; i<numCreatures;i++){
@@ -48,8 +48,8 @@ public:
     }
     
     
-    Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > vec, int l)
-    : Gillepsie(numCreatures, states, vec)
+    Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > vec, std::function<double()> die, int l)
+    : Gillepsie(numCreatures, states, vec, die)
     {
         limit = l;
     }
@@ -61,7 +61,7 @@ public:
             //c.printGroups();
             //std::cout<<c.getCurrentTime()<<" "<<limit<<std::endl;
             entry vecPos = c.selectRate();
-            //std::cout<<vecPos.first<<" "<<vecPos.second.first<<" "<<vecPos.second.second<<"\n";
+            // std::cout<<vecPos.first<<" "<<vecPos.second.first<<" "<<vecPos.second.second<<"\n";
             if (vecPos.second.second>2){
                 if (vecPos.second.second==3){
                     addCreature(creatures[vecPos.second.first-1].get("positionX"));
@@ -115,7 +115,13 @@ public:
 int main() {
     clock_t t;
     std::vector< entry > myRates{{10,{1,1}},{10,{1,2}},{1,{1,3}}, {.25,{1,4}} };
-    Gillepsie myG(1,{"positionX","dead"},myRates, 5);  
+
+    std::mt19937 mt_rand;
+    mt_rand.seed(19999);
+    std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1),mt_rand);
+
+    Gillepsie myG(1,{"positionX","dead"},myRates, die, 10);  
+
     t = clock();
     std::cout<<"working...";
     myG.run();

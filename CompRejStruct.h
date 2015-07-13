@@ -24,25 +24,18 @@ public:
 		gSum+=p.first;
 		elements.push_back(p);
 	}
-	std::pair<double,std::pair<int, int> > find(double compMin){
+	std::pair<double,std::pair<int, int> > find(double compMin,  std::function<double()> die){
 		updateGSum();
 		double levelHeight = pow(2,level)*compMin;
-		auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-		std::mt19937 mt_rand;
-		mt_rand.seed(seed);
-        auto die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
-        auto vecPlace = std::bind(std::uniform_int_distribution<int>(0,elements.size()-1), mt_rand);
-        std::pair<double,std::pair<int, int> > current = elements[vecPlace()];
+        std::pair<double,std::pair<int, int> > current = elements[ceil(die()*(elements.size()-1))];
         double place = die() * levelHeight;
         COUNT_THIS_SCOPE(__PRETTY_FUNCTION__);
-        int count = 0;
+
         while(current.first<place){
-        	count++;
-        	// Counter::ScopeCounter<> sc("main loop");
-            current = elements[vecPlace()];
+        	Counter::ScopeCounter<> sc("main loop");
+            current = elements[ceil(die()*(elements.size()-1))];
         	place = die() * levelHeight;
         }
-        std::cout<<count<<"\n";
         return current;
 	}
 	double getGSum(){return gSum;}
@@ -75,6 +68,7 @@ public:
 
 class Composition{
 private:
+	std::function<double()> die;
 	double currentTime{0};
 	double deltaT{0};
 	std::pair<double,std::pair<int, int> > min{0,{0,0}};
@@ -82,7 +76,8 @@ private:
 	std::vector< Group >  groups;
 public:
 	Composition() = default;
-	Composition(std::vector< std::pair<double,std::pair<int, int> > > r){
+	Composition(std::vector< std::pair<double,std::pair<int, int> > > r,std::function<double()> d){
+		die = d;
 		min = *std::min_element(std::begin(r),std::end(r),[]( std::pair<double,std::pair<int, int> > r1, std::pair<double,std::pair<int, int> > r2){return r1.first<r2.first;});
 		std::cout<<min.first<<"\n";
 		Group a(1);
@@ -95,9 +90,7 @@ public:
 				}
 				else if(y == groups.size()-1)
 				{
-					Group a = *new Group(y+2);
-					std::cout<<a.getGSum()<<"\n";
-					groups.push_back(a);
+					groups.emplace_back(y+2);
 				}
 			}
 			std::cout<<"----------------------------------\n";
@@ -128,35 +121,30 @@ public:
 		// }
 		for (int y = 0; y < groups.size();y++){
 			if (p.first<pow(2,y+1)*min.first){
-				//std::cout<<"should have added: "<<p.first<<" "<<p.second.first<<" "<<p.second.second<<"   to group: "<<y<<"\n";
 				groups[y].add(p);
 				break;
 			}
 			else if (y == groups.size()-1)
-				groups.push_back(*new Group(y+2));
+				groups.emplace_back(y+2);
 		}
 		updateGroupSums();
 	}
 
-	Group selectGroup(){
+	std::pair<double,std::pair<int, int> > selectRate(){
 		updateGroupSums();
-		auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-		std::mt19937 mt_rand;
-		mt_rand.seed(seed);
-		auto die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
 	    deltaT = (-log(die()))/groupSums;
         currentTime+=deltaT;
         double place = die()*groupSums;
 		for (int i = groups.size()-1; i>=0;i--){
 			if (place<groups[i].getGSum()){
-				return groups[i];
+				return groups[i].find(min.first,die);
 			}
 			else
 				place-=groups[i].getGSum();
 		}
-		//fix this 
-		return Group(0);
+		return {-1,{-1,-1}};
 	}
+
 	void deleteC(double identifier){
 		for (int x = 0; x<groups.size();x++){
 			while(groups[x].hasCreature(identifier)){
@@ -167,9 +155,5 @@ public:
 		updateGroupSums();
 	}
 	double getGroupSums(){return groupSums;}
-
-	std::pair<double,std::pair<int, int> > selectRate(){
-		return selectGroup().find(min.first);
-	}
 	double getCurrentTime(){return currentTime;}
 };
