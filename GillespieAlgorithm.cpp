@@ -121,7 +121,7 @@ public:
 int main() {
     clock_t t;
     std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {.5,{1,3}}, {.25,{1,4}} };
-    Gillepsie myG(1,{"positionX","dead"},myRates, 239131124334,10);  
+    Gillepsie myG(1,{"positionX","dead"},myRates, 19999,10);  
     t = clock();
     std::cout<<"working...";
     myG.run();
