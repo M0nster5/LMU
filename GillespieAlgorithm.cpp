@@ -39,7 +39,7 @@ public:
     }
     
     
-    Gillepsie(int numCreat.;ures, std::vector<std::string> states, std::vector< entry > r,int s)
+    Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > r,int s)
     : bt(r), creatures(numCreatures)
     {
         seed = s;
@@ -121,7 +121,7 @@ public:
 int main() {
     clock_t t;
     std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {.5,{1,3}}, {.25,{1,4}} };
-    Gillepsie myG(1,{"positionX","dead"},myRates, 19999,10);  
+    Gillepsie myG(1,{"positionX","dead"},myRates, 1922199,10);  
     t = clock();
     std::cout<<"working...";
     myG.run();

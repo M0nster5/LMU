@@ -67,21 +67,34 @@ public:
 
 	void insert(std::pair<double,std::pair<int,int> > a){
 		conductor = head;
-		while(!isLeaf()){
-			if (conductor->getRight()->getRate() >= conductor->getLeft()->getRate())
-				conductor = conductor->getLeft();
-			else
-				conductor = conductor->getRight();
-		}
-		// Node* temp = new Node(new Node(conductor->getRate(),conductor->getKey()),new Node(a.first,a.second));
-		conductor->setLeft(new Node(conductor->getRate(),conductor->getKey()));
-		conductor->getLeft()->setParent(conductor);
-		conductor->setRight(new Node(a.first,a.second));
-		conductor->getRight()->setParent(conductor);
-		double difference = conductor->getRate() - (conductor->getRight()->getRate()+conductor->getLeft()->getRate());
-		conductor->setKey({0,0});
-		update(conductor,-difference);
-		conductor = head;
+			// head = conductor = new Node(head, new Node(a.first,a.second));
+			while(!isLeaf()){
+				if (a.first>head->getLeft()->getRate()&&a.first>head->getRight()->getRate()){
+					if (conductor == head){
+						head = conductor = new Node(head, new Node(a.first,a.second));
+					}
+					else{
+						Node* nPP = conductor->getParent();
+						Node* nParent = new Node(conductor, new Node(a.first,a.second));
+						nParent->setParent(nPP);
+						update(nPP,(nPP->getLeft()->getRate()+nPP->getRight()->getRate())-nPP->getRate());
+					}
+					return;
+				}
+				if (conductor->getRight()->getRate() >= conductor->getLeft()->getRate())
+					conductor = conductor->getLeft();
+				else
+					conductor = conductor->getRight();
+			}
+			// Node* temp = new Node(new Node(conductor->getRate(),conductor->getKey()),new Node(a.first,a.second));
+			conductor->setLeft(new Node(conductor->getRate(),conductor->getKey()));
+			conductor->getLeft()->setParent(conductor);
+			conductor->setRight(new Node(a.first,a.second));
+			conductor->getRight()->setParent(conductor);
+			double difference = conductor->getRate() - (conductor->getRight()->getRate()+conductor->getLeft()->getRate());
+			conductor->setKey({0,0});
+			update(conductor,-difference);
+			conductor = head;
 	}
 	
 //special remove func that given a binary tree such as
