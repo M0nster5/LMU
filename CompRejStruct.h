@@ -144,7 +144,11 @@ public:
 		}
 		return {-1,{-1,-1}};
 	}
-
+	// updateGroups(){
+	// 	for (int x = 0; x<groups.size();x++){
+	// 		for (int y = 0; y<group[x].)
+	// 	}
+	// }
 	void deleteC(double identifier){
 		for (int x = 0; x<groups.size();x++){
 			while(groups[x].hasCreature(identifier)){
