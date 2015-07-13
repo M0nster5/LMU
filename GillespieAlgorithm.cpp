@@ -56,11 +56,19 @@ public:
     
     //generates output and puts it in data vector
     void run(){
-        while(c.getCurrentTime()<limit&&c.getGroupSums()>0){
+        entry errorTest{-1,{-1,-1}};
+        while(c.getCurrentTime()<limit&&c.getGroupSums()>0&&rateSize()<3000){
             //std::cout<<"\nsize: "<<creatures.size()<<"\n";
             //c.printGroups();
             //std::cout<<c.getCurrentTime()<<" "<<limit<<std::endl;
             entry vecPos = c.selectRate();
+            try{
+                if (vecPos == errorTest)
+                    throw "selectRate error";
+            }catch(const char* msg){
+                std::cout<<msg;
+            }
+
             // std::cout<<vecPos.first<<" "<<vecPos.second.first<<" "<<vecPos.second.second<<"\n";
             if (vecPos.second.second>2){
                 if (vecPos.second.second==3){
@@ -83,7 +91,14 @@ public:
         }
        // std::cout<<"final size: "<<creatures.size();
     }
-    
+    int rateSize(){
+        int count = 0;
+        for (int i = 0; i<creatures.size();i++){
+            if (creatures[i].get("dead")!=1)
+                count++;
+        }
+        return count*4;        
+    }
     void addCreature(double currentPos){
         States creature;
         creature.initialize(rStrings);
@@ -120,14 +135,15 @@ int main() {
     mt_rand.seed(19999);
     std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1),mt_rand);
 
-    Gillepsie myG(1,{"positionX","dead"},myRates, die, 10);  
+    Gillepsie myG(1,{"positionX","dead"},myRates, die, 11);  
 
     t = clock();
     std::cout<<"working...";
     myG.run();
     t = clock() - t;
     std::cout<<"finished running in "<<((float)t)/CLOCKS_PER_SEC<<'\n';
-    myG.outputData();
+    std::cout<<"rate size: "<<myG.rateSize()<<"\n";
+    //myG.outputData();
     return 0;
 }
 
