@@ -6,9 +6,8 @@
 #include <random>
 #include <chrono>
 #include "counter.hh"
-// #include <usr/local/Cellar/boost/test/included/unit_test.hpp>
 
-
+//Group Struct that contains its level sum of elements and vector of elements
 class Group{
 private:
 	int level{0};
@@ -16,14 +15,17 @@ private:
 	std::vector< std::pair<double, std::pair<int, int> > > elements;
 
 public:
+	//initializes according to bracket constructors in private
 	Group() = default;
 	Group(int l){
 		level = l;
 	}
+	//adds element to vector and updates the group sum
 	void add(std::pair<double,std::pair<int, int> > p){
 		gSum+=p.first;
 		elements.push_back(p);
 	}
+	//The rejection algorithm which takes in the random num generator die
 	std::pair<double,std::pair<int, int> > find(double compMin,  std::function<double()> die){
 		updateGSum();
 		double levelHeight = pow(2,level)*compMin;
@@ -38,8 +40,8 @@ public:
         }
         return current;
 	}
-	double getGSum(){return gSum;}
 
+	double getGSum(){return gSum;}
 
 	void printAll(){
 		std::cout<<"Level: "<<level<<"\n";
@@ -49,10 +51,11 @@ public:
 		}
 		std::cout<<"\n"<<"Group Sum: "<<gSum<<"\n\n";
 	}
+	//returns true if there is a creature with the identifier fir the second.first element of the pair
 	bool hasCreature(double identifier){
 		return std::find_if(std::begin(elements),std::end(elements),[&](std::pair<double, std::pair<int, int> > element){return element.second.first == identifier;})!=elements.end();
 	}
-
+	//removes the first element with the group num for the second.first element
 	void remove(int group){
 		elements.erase(std::remove_if(elements.begin(),elements.end(),[&](std::pair<double, std::pair<int, int> > element){return element.second.first == group; } ));
 	}
@@ -78,6 +81,7 @@ public:
 	Composition() = default;
 	Composition(std::vector< std::pair<double,std::pair<int, int> > > r,std::function<double()> d){
 		die = d;
+		//finds the minimum element entered
 		min = *std::min_element(std::begin(r),std::end(r),[]( std::pair<double,std::pair<int, int> > r1, std::pair<double,std::pair<int, int> > r2){return r1.first<r2.first;});
 		Group a(1);
 		groups.push_back(a);
@@ -111,7 +115,7 @@ public:
 			groupSums += groups[i].getGSum();
 		}
 	}
-
+	//adds rate to structure
 	void addRate(std::pair<double,std::pair<int, int> > p){
 		// if (p.first<min.first){
 		// 	min = p;
@@ -126,7 +130,7 @@ public:
 		}
 		updateGroupSums();
 	}
-
+	//selects rate with Gillespie steps
 	std::pair<double,std::pair<int, int> > selectRate(){
 		updateGroupSums();
 	    deltaT = (-log(die()))/groupSums;
@@ -141,11 +145,7 @@ public:
 		}
 		return {-1,{-1,-1}};
 	}
-	// updateGroups(){
-	// 	for (int x = 0; x<groups.size();x++){
-	// 		for (int y = 0; y<group[x].)
-	// 	}
-	// }
+	//deletes an entire creature with identifier 
 	void deleteC(double identifier){
 		for (int x = 0; x<groups.size();x++){
 			while(groups[x].hasCreature(identifier)){
