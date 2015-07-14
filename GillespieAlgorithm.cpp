@@ -132,10 +132,10 @@ int main() {
     std::vector< entry > myRates{{10,{1,1}},{10,{1,2}},{1,{1,3}}, {.25,{1,4}} };
 
     std::mt19937 mt_rand;
-    mt_rand.seed(192212299);
+    mt_rand.seed(1999);
     std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1),mt_rand);
 
-    Gillepsie myG(1,{"positionX","dead"},myRates, die, 5);  
+    Gillepsie myG(1,{"positionX","dead"},myRates, die, 2);  
 
     t = clock();
     std::cout<<"working...";
