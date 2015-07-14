@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cmath>
 #include <random>
-
+//structure that has left, right, and parent pointers
 class Node{
 private:
 	Node* parent{nullptr};
@@ -17,6 +17,8 @@ public:
 		rate = r;
 		key = k;
 	}
+	//Creates a new node that is the sum of the two inputted
+	//Children are the inputted nodes
 	Node(Node* l, Node* r){
 		rate = l->getRate() + r->getRate();
 		l->setParent(this);
@@ -36,6 +38,7 @@ public:
 	void setKey(std::pair<int,int> a){key = a;}
 };
 
+//Structure made from the nodes that only has the head 
 class BinaryTree{
 private:
 	Node* head;
@@ -69,10 +72,14 @@ public:
 		conductor = head;
 			// head = conductor = new Node(head, new Node(a.first,a.second));
 			while(!isLeaf()){
+				// a's rate is bigger than the right and left nodes
 				if (a.first>conductor->getLeft()->getRate()&&a.first>conductor->getRight()->getRate()){
+					//if it is the first node make the new head a new node that has the current head and a as children
 					if (conductor == head){
 						head = conductor = new Node(head, new Node(a.first,a.second));
 					}
+					//otherwise figure out if the current node is of the left or right parents
+					//and construct a new node from the results in place of current... update the parents
 					else{
 						Node* nPP = conductor->getParent();
 						Node* nParent = new Node(conductor, new Node(a.first,a.second));
@@ -86,6 +93,7 @@ public:
 					}
 					return;
 				}
+				//otherwise follow the example shown at the beggining of the func
 				if (conductor->getRight()->getRate() >= conductor->getLeft()->getRate())
 					conductor = conductor->getLeft();
 				else
