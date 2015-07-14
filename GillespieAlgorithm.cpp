@@ -73,7 +73,7 @@ public:
             if (vecPos.second.second>2){
                 if (vecPos.second.second==3){
                     addCreature(creatures[vecPos.second.first-1].get("positionX"));
-                    std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {1,{creatures.size(),3}},{.25,{creatures.size(),4}} };
+                    std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {.5,{creatures.size(),3}},{.25,{creatures.size(),4}} };
                     for (int i = 0; i<nCreature.size();i++){
                         c.addRate(nCreature[i]);
                     }
@@ -129,13 +129,13 @@ public:
 
 int main() {
     clock_t t;
-    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}},{1,{1,3}}, {.25,{1,4}} };
+    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}},{.5,{1,3}}, {.25,{1,4}} };
 
     std::mt19937 mt_rand;
-    mt_rand.seed(1999);
+    mt_rand.seed(192212299);
     std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1),mt_rand);
 
-    Gillepsie myG(1,{"positionX","dead"},myRates, die, 2);  
+    Gillepsie myG(1,{"positionX","dead"},myRates, die, 10);  
 
     t = clock();
     std::cout<<"working...";
