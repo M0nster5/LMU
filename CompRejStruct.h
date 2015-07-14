@@ -79,7 +79,6 @@ public:
 	Composition(std::vector< std::pair<double,std::pair<int, int> > > r,std::function<double()> d){
 		die = d;
 		min = *std::min_element(std::begin(r),std::end(r),[]( std::pair<double,std::pair<int, int> > r1, std::pair<double,std::pair<int, int> > r2){return r1.first<r2.first;});
-		//std::cout<<min.first<<"\n";
 		Group a(1);
 		groups.push_back(a);
 		for (int x = 0; x < r.size(); x++){
@@ -93,8 +92,6 @@ public:
 					groups.emplace_back(y+2);
 				}
 			}
-			std::cout<<"----------------------------------\n";
-			printGroups();
 		}
 		for (int i = 0; i<groups.size(); i++){
 			groupSums += groups[i].getGSum();
