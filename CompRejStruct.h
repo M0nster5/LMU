@@ -29,10 +29,9 @@ public:
 	std::pair<double,std::pair<int, int> > find(double compMin,  std::function<double()> die){
 		updateGSum();
 		double levelHeight = pow(2,level)*compMin;
-        std::pair<double,std::pair<int, int> > current = elements[ceil(die()*(elements.size()-1))];
+        std::pair<double,std::pair<int, int> > current = elements[floor(die()*(elements.size()))];
         double place = die() * levelHeight;
         COUNT_THIS_SCOPE(__PRETTY_FUNCTION__);
-
         while(current.first<place){
         	Counter::ScopeCounter<> sc("main loop");
             current = elements[ceil(die()*(elements.size()-1))];
