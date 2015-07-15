@@ -55,9 +55,16 @@ public:
 	bool hasCreature(double identifier){
 		return std::find_if(std::begin(elements),std::end(elements),[&](std::pair<double, std::pair<int, int> > element){return element.second.first == identifier;})!=elements.end();
 	}
+	bool hasRate(std::pair<int,int> identifier){
+		return std::find_if(std::begin(elements),std::end(elements),[&](std::pair<double, std::pair<int, int> > element){return element.second == identifier;})!=elements.end();
+	}
 	//removes the first element with the group num for the second.first element
 	void remove(int group){
 		elements.erase(std::remove_if(elements.begin(),elements.end(),[&](std::pair<double, std::pair<int, int> > element){return element.second.first == group; } ));
+	}
+	//removes element that has the same identifier (.second) as identifier
+	void remove(std::pair<int,int> identifier){
+		elements.erase(std::remove_if(elements.begin(),elements.end(),[&](std::pair<double, std::pair<int, int> > element){return element.second == identifier; } ));
 	}
 	void updateGSum(){
 		gSum = 0;
@@ -155,6 +162,18 @@ public:
 		}
 		updateGroupSums();
 	}
+	//deletes one rate
+	void deleteR(std::pair<int,int> identifier){
+		for (int x = 0; x<groups.size();x++){
+			if(groups[x].hasRate(identifier)){
+				groups[x].remove(identifier);
+				groups[x].updateGSum();
+				break;
+			}
+		}
+		updateGroupSums();
+	}
+
 	double getGroupSums(){return groupSums;}
 	double getCurrentTime(){return currentTime;}
 };

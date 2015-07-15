@@ -3,8 +3,7 @@
 //
 //  Created by Connor on 29/06/15.
 //  Copyright (c) 2015 Connor. All rights reserved.
-//compile with g++ -DHAVE_COUNTERS=1 --std=c++11 GillespieAlgorithm.cpp counter.cpp -o GillespieAlgorithm
-
+//
 #include <time.h>       
 #include "counter.hh"
 #include <iostream>
@@ -14,7 +13,7 @@
 #include <fstream>
 #include <stdio.h>
 #include <utility>
-#include "CompRejStruct.h"
+#include "BinaryImplementation.h"
 #include "States.h"
 
 using entry = std::pair< double, std::pair<int,int> >;
@@ -24,21 +23,21 @@ private:
     std::vector< States > creatures;
     std::vector< std::string > rStrings;
     int limit;
-    Composition c;
+    BinaryTree bt;
     std::vector< std::vector< double > > data;
     
 public:
 
     //initializers
     Gillepsie()
-    :c()
+    :bt()
     {
         limit = 100;
     }
     
     
-    Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > r,std::function<double()> die)
-    : c(r,die), creatures(numCreatures)
+    Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > r,std::function<double()> d)
+    : bt(r,d), creatures(numCreatures)
     {
         rStrings = states;
         for (int i = 0; i<numCreatures;i++){
@@ -48,57 +47,40 @@ public:
     }
     
     
-    Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > vec, std::function<double()> die, int l)
-    : Gillepsie(numCreatures, states, vec, die)
+    Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > vec, std::function<double()> d, int l)
+    : Gillepsie(numCreatures, states, vec, d)
     {
         limit = l;
     }
     
     //generates output and puts it in data vector
     void run(){
-        entry errorTest{-1,{-1,-1}};
-        while(c.getCurrentTime()<limit&&c.getGroupSums()>0&&rateSize()<3000){
-            //std::cout<<"\nsize: "<<creatures.size()<<"\n";
-            //c.printGroups();
-            //std::cout<<c.getCurrentTime()<<" "<<limit<<std::endl;
-            entry vecPos = c.selectRate();
-            try{
-                if (vecPos == errorTest)
-                    throw "selectRate error";
-            }catch(const char* msg){
-                std::cout<<msg;
-            }
-
-            // std::cout<<vecPos.first<<" "<<vecPos.second.first<<" "<<vecPos.second.second<<"\n";
+        while(bt.getCurrentTime()<limit&&bt.getHead()!=nullptr){
+            //std::cout<<place<<"\n";
+            entry vecPos = bt.find();
+            //std::cout<<vecPos.first<<" "<<vecPos.second.first<<" "<<vecPos.second.second<<"\n";
             if (vecPos.second.second>2){
                 if (vecPos.second.second==3){
                     addCreature(creatures[vecPos.second.first-1].get("positionX"));
                     std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {.5,{creatures.size(),3}},{.25,{creatures.size(),4}} };
                     for (int i = 0; i<nCreature.size();i++){
-                        c.addRate(nCreature[i]);
+                        bt.insert(nCreature[i]);
                     }
                 }
                 else{
-                    c.deleteC(vecPos.second.first);
+                    bt.removeAll(vecPos.second.first,bt.getHead());
                 }
             }
             creatures[vecPos.second.first-1].increment(vecPos.second.second);
             for (int x = 0; x<creatures.size();x++){
                // std::cout<<"creature "<<x+1<<" position "<<creatures[x].get("positionX")<<"\n";
                 if (creatures[x].get("dead")!=1)
-                    data.push_back({c.getCurrentTime(),creatures[x].get("positionX")});
+                    data.push_back({bt.getCurrentTime(),creatures[x].get("positionX")});
             }
         }
-       // std::cout<<"final size: "<<creatures.size();
+        std::cout<<"final size: "<<creatures.size();
     }
-    int rateSize(){
-        int count = 0;
-        for (int i = 0; i<creatures.size();i++){
-            if (creatures[i].get("dead")!=1)
-                count++;
-        }
-        return count*4;        
-    }
+    
     void addCreature(double currentPos){
         States creature;
         creature.initialize(rStrings);
@@ -120,29 +102,24 @@ public:
         }
     }
     
-    Composition getRateStructure(){
-        return c;
+    BinaryTree getRateStructure(){
+        return bt;
     }
 };
 
 
-
 int main() {
-    clock_t t;
-    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}},{.5,{1,3}}, {.25,{1,4}} };
-
     std::mt19937 mt_rand;
-    mt_rand.seed(192212299);
-    std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1),mt_rand);
-
-    Gillepsie myG(1,{"positionX","dead"},myRates, die, 10);  
-
+    mt_rand.seed(77712);
+    std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
+    clock_t t;
+    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {.5,{1,3}}, {.25,{1,4}} };
+    Gillepsie myG(1,{"positionX","dead"},myRates, die ,10);  
     t = clock();
     std::cout<<"working...";
     myG.run();
     t = clock() - t;
     std::cout<<"finished running in "<<((float)t)/CLOCKS_PER_SEC<<'\n';
-    std::cout<<"rate size: "<<myG.rateSize()<<"\n";
     myG.outputData();
     return 0;
 }
