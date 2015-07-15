@@ -3,7 +3,6 @@
 #include <iostream>
 #include <cmath>
 #include <random>
-#include <boost/filesystem.hpp>
 //structure that has left, right, and parent pointers
 class Node{
 private:
