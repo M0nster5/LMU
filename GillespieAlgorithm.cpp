@@ -65,7 +65,7 @@ public:
             if (vecPos.second.second>2){
                 if (vecPos.second.second==3){
                     addCreature(creatures[vecPos.second.first-1].get("positionX"));
-                    std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {1,{creatures.size(),3}},{.25,{creatures.size(),4}} };
+                    std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {.5,{creatures.size(),3}},{.25,{creatures.size(),4}} };
                     for (int i = 0; i<nCreature.size();i++){
                         (structIsaBTree) ? bt.insert(nCreature[i]) : c.addRate(nCreature[i]);
                     }
@@ -81,7 +81,7 @@ public:
                     data.push_back({(structIsaBTree) ? bt.getCurrentTime() : c.getCurrentTime() ,creatures[x].get("positionX")});
             }
         }
-        std::cout<<"final size: "<<creatures.size();
+        std::cout<<"final size: "<<creatures.size()<<"\n";
     }
     
     void addCreature(double currentPos){
@@ -110,11 +110,11 @@ public:
 
 int main() {
     std::mt19937 mt_rand;
-    mt_rand.seed(1126199999921);
+    mt_rand.seed(89998811118);
     std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
 
     clock_t t;
-    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {1,{1,3}}, {.25,{1,4}} };
+    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {.5,{1,3}}, {.25,{1,4}} };
     Gillepsie myC(false,1,{"positionX","dead"},myRates, die ,6);  
     //t = clock();
     //std::cout<<"working...";
@@ -122,12 +122,9 @@ int main() {
     //t = clock() - t;
     myC.outputData();
     //delete &myG;
-    std::mt19937 mt_rand1;
-    mt_rand1.seed(1126199999921);
-    std::function<double()> d = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand1);
-    Gillepsie myB(true,1,{"positionX","dead"},myRates, d ,1);
-    myB.run();
-    myB.outputData();
+    myC = Gillepsie(true,1,{"positionX","dead"},myRates, die ,11);
+    myC.run();
+    myC.outputData();
    // std::cout<<"finished running in "<<((float)t)/CLOCKS_PER_SEC<<'\n';
     return 0;
 }

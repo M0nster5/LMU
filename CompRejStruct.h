@@ -34,7 +34,7 @@ public:
         COUNT_THIS_SCOPE(__PRETTY_FUNCTION__);
         while(current.first<place){
         	Counter::ScopeCounter<> sc("main loop");
-            current = elements[ceil(die()*(elements.size()-1))];
+            current = elements[floor(die()*(elements.size()))];
         	place = die() * levelHeight;
         }
         return current;
