@@ -115,16 +115,19 @@ int main() {
 
     clock_t t;
     std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {1,{1,3}}, {.25,{1,4}} };
-    Gillepsie myG(false,1,{"positionX","dead"},myRates, die ,6);  
+    Gillepsie myC(false,1,{"positionX","dead"},myRates, die ,6);  
     //t = clock();
     //std::cout<<"working...";
-    myG.run();
+    myC.run();
     //t = clock() - t;
-    myG.outputData();
+    myC.outputData();
     //delete &myG;
-    myG =  Gillepsie(true,1,{"positionX","dead"},myRates, die ,1);
-    myG.run();
-    myG.outputData();
+    std::mt19937 mt_rand1;
+    mt_rand1.seed(1126199999921);
+    std::function<double()> d = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand1);
+    Gillepsie myB(true,1,{"positionX","dead"},myRates, d ,1);
+    myB.run();
+    myB.outputData();
    // std::cout<<"finished running in "<<((float)t)/CLOCKS_PER_SEC<<'\n';
     return 0;
 }
