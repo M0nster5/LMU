@@ -20,9 +20,6 @@ using entry = std::pair< double, std::pair<int,int> >;
 //Declare Gillespie class
 class Gillepsie{
 private:
-    double deltaT{0};
-    double currentTime{0};
-    int seed{1};
     std::vector< States > creatures;
     std::vector< std::string > rStrings;
     int limit;
@@ -39,10 +36,9 @@ public:
     }
     
     
-    Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > r,int s)
-    : bt(r), creatures(numCreatures)
+    Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > r,std::function<double()> d)
+    : bt(r,d), creatures(numCreatures)
     {
-        seed = s;
         rStrings = states;
         for (int i = 0; i<numCreatures;i++){
             creatures[i].initialize(states);
@@ -51,23 +47,17 @@ public:
     }
     
     
-    Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > vec, int s, int l)
-    : Gillepsie(numCreatures, states, vec,s)
+    Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > vec, std::function<double()> d, int l)
+    : Gillepsie(numCreatures, states, vec, d)
     {
         limit = l;
     }
     
     //generates output and puts it in data vector
     void run(){
-        std::mt19937 mt_rand;
-        mt_rand.seed(seed);
-        auto die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
-        while(currentTime<limit&&bt.getHead()!=nullptr){
-            deltaT = (-log(die()))/bt.rSum();
-            currentTime+=deltaT;
-            double place = die()*bt.rSum();
+        while(bt.getCurrentTime()<limit&&bt.getHead()!=nullptr){
             //std::cout<<place<<"\n";
-            entry vecPos = bt.find(place);
+            entry vecPos = bt.find();
             //std::cout<<vecPos.first<<" "<<vecPos.second.first<<" "<<vecPos.second.second<<"\n";
             if (vecPos.second.second>2){
                 if (vecPos.second.second==3){
@@ -78,14 +68,14 @@ public:
                     }
                 }
                 else{
-                    bt.remove(vecPos.second.first,bt.getHead());
+                    bt.removeAll(vecPos.second.first,bt.getHead());
                 }
             }
             creatures[vecPos.second.first-1].increment(vecPos.second.second);
             for (int x = 0; x<creatures.size();x++){
                // std::cout<<"creature "<<x+1<<" position "<<creatures[x].get("positionX")<<"\n";
                 if (creatures[x].get("dead")!=1)
-                    data.push_back({currentTime,creatures[x].get("positionX")});
+                    data.push_back({bt.getCurrentTime(),creatures[x].get("positionX")});
             }
         }
         std::cout<<"final size: "<<creatures.size();
@@ -119,9 +109,12 @@ public:
 
 
 int main() {
+    std::mt19937 mt_rand;
+    mt_rand.seed(77712);
+    std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
     clock_t t;
     std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {.5,{1,3}}, {.25,{1,4}} };
-    Gillepsie myG(1,{"positionX","dead"},myRates, 192212299,11);  
+    Gillepsie myG(1,{"positionX","dead"},myRates, die ,10);  
     t = clock();
     std::cout<<"working...";
     myG.run();
