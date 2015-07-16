@@ -25,8 +25,8 @@ private:
     std::vector< States > creatures;
     std::vector< std::string > rStrings;
     int limit;
-    Composition c;
-    BinaryTree bt;
+    Composition<std::pair<int,int>> c;
+    BinaryTree<std::pair<int,int>> bt;
     std::vector< std::vector< double > > data;
     
 public:
@@ -71,7 +71,7 @@ public:
                     }
                 }
                 else{
-                    (structIsaBTree) ? bt.removeAll(vecPos.second.first,bt.getHead()) : c.deleteC(vecPos.second.first);
+                    (structIsaBTree) ? bt.removeAll(vecPos.second,bt.getHead()) : c.deleteC(vecPos.second.first);
                 }
             }
             creatures[vecPos.second.first-1].increment(vecPos.second.second);
@@ -110,12 +110,12 @@ public:
 
 int main() {
     std::mt19937 mt_rand;
-    mt_rand.seed(89998811118);
+    mt_rand.seed(899981111118);
     std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
 
     clock_t t;
     std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {.5,{1,3}}, {.25,{1,4}} };
-    Gillepsie myC(false,1,{"positionX","dead"},myRates, die ,6);  
+    Gillepsie myC(false,1,{"positionX","dead"},myRates, die,11);  
     //t = clock();
     //std::cout<<"working...";
     myC.run();
