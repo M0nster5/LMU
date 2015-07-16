@@ -16,6 +16,7 @@
 #include "BinaryImplementation.h"
 #include "States.h"
 #include "CompRejStruct.h"
+#include <chrono>
 
 using entry = std::pair< double, std::pair<int,int> >;
 //Declare Gillespie class
@@ -27,6 +28,7 @@ private:
     int limit;
     Composition<std::pair<int,int>> c;
     BinaryTree<std::pair<int,int>> bt;
+    std::vector<double> timesteps;
     std::vector< std::vector< double > > data;
     
 public:
@@ -56,34 +58,39 @@ public:
     {
         limit = l;
     }
+    Gillepsie(bool s, int numCreatures, std::vector<std::string> states, std::vector< entry > vec,std::vector<double> myIncrements, std::function<double()> d, int l)
+    : Gillepsie(s,numCreatures, states, vec, d)
+    {
+        timesteps = myIncrements;
+        limit = l;
+    }
     
     //generates output and puts it in data vector
     void run(){
+        int currentTimeStep = 0;
         while( ((structIsaBTree) ? bt.getCurrentTime()<limit : c.getCurrentTime()<limit) && ((structIsaBTree) ? bt.getHead()!=nullptr : c.getGroupSums()>0) ){
             entry vecPos = (structIsaBTree) ? bt.find() : c.selectRate();
-            //std::cout<<vecPos.first<<" "<<vecPos.second.first<<" "<<vecPos.second.second<<"\n";
-            if (vecPos.second.second>2){
-                if (vecPos.second.second==3){
-                    addCreature(creatures[vecPos.second.first-1].get("positionX"));
-                    std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {.5,{creatures.size(),3}},{.25,{creatures.size(),4}} };
-                    for (int i = 0; i<nCreature.size();i++){
-                        (structIsaBTree) ? bt.insert(nCreature[i]) : c.addRate(nCreature[i]);
-                    }
-                }
-                else{
-                    (structIsaBTree) ? bt.removeAll(vecPos.second,bt.getHead()) : c.deleteC(vecPos.second.first);
+            creatures[vecPos.second.first-1].increment(vecPos.second.second);
+
+            if (timesteps.size()>0){
+                    // std::cout<<"creature "<<x+1<<" position "<<creatures[x].get("positionX")<<"\n";
+                while(currentTimeStep<timesteps.size()&&(structIsaBTree)?bt.getCurrentTime()>timesteps[currentTimeStep]:c.getCurrentTime()>timesteps[currentTimeStep]){
+                    // std::cout<<"current time: "<<((structIsaBTree)?bt.getCurrentTime():c.getCurrentTime())<<"  currentTimeStep: "<<timesteps[currentTimeStep]<<'\n';
+                    data.push_back({timesteps[currentTimeStep],creatures[0].get("positionX")});
+                    currentTimeStep++;
                 }
             }
-            creatures[vecPos.second.first-1].increment(vecPos.second.second);
-            for (int x = 0; x<creatures.size();x++){
-               // std::cout<<"creature "<<x+1<<" position "<<creatures[x].get("positionX")<<"\n";
-                if (creatures[x].get("dead")!=1)
-                    data.push_back({(structIsaBTree) ? bt.getCurrentTime() : c.getCurrentTime() ,creatures[x].get("positionX")});
+            else{
+                for (int x = 0; x<creatures.size();x++){
+
+                   // std::cout<<"creature "<<x+1<<" position "<<creatures[x].get("positionX")<<"\n";
+                     data.push_back({(structIsaBTree) ? bt.getCurrentTime() : c.getCurrentTime() ,creatures[x].get("positionX")});
+                }
             }
         }
-        std::cout<<"final size: "<<creatures.size()<<"\n";
+        // std::cout<<"final size: "<<creatures.size()<<"\n";
     }
-    
+
     void addCreature(double currentPos){
         States creature;
         creature.initialize(rStrings);
@@ -93,17 +100,17 @@ public:
     void deleteCreature(int index){
         creatures.erase(creatures.begin()+index);
     }
-
-    void outputData(){
-        const char *path= (structIsaBTree)? "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/outputBT.txt" : "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/outputC.txt";
-        std::ofstream out_data(path);
-        for (int x = 0; x<data.size();x++){
-            for ( int y = 0; y<data[0].size();y++){
-                out_data<<data[x][y]<< ' ';
-            }
-            out_data<< '\n';
-        }
-    }
+    std::vector<std::vector<double>> getData(){return data;}
+    // void outputData(){
+    //     const char *path= (structIsaBTree)? "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/outputBT.txt" : "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/outputC.txt";
+    //     std::ofstream out_data(path);
+    //     for (int x = 0; x<data.size();x++){
+    //         for ( int y = 0; y<data[0].size();y++){
+    //             out_data<<data[x][y]<< ' ';
+    //         }
+    //         out_data<< '\n';
+    //     }
+    // }
     
 };
 
@@ -112,19 +119,33 @@ int main() {
     std::mt19937 mt_rand;
     mt_rand.seed(98111111228);
     std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
+    const char *path= "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/output.txt";
+    std::ofstream out_data(path);
 
     clock_t t;
+    std::vector<double> inc;
+    for (double i = .1; i<4.5;i+=.1){
+        inc.push_back(i);
+    }
     std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {.5,{1,3}}, {.25,{1,4}} };
-    Gillepsie myC(false,1,{"positionX","dead"},myRates, die,11);  
-    //t = clock();
-    //std::cout<<"working...";
-    myC.run();
-    //t = clock() - t;
-    myC.outputData();
-    //delete &myG;
-    myC = Gillepsie(true,1,{"positionX","dead"},myRates, die ,11);
-    myC.run();
-    myC.outputData();
+    Gillepsie myC(false,1,{"positionX"},myRates,inc, die,4);  
+    for (int i = 0; i<1000;i++){
+        if(i%100 == 0){
+            std::cout<<i/10<<" percent\n";
+        }
+        myC.run();
+        for (int x = 0; x<myC.getData().size();x++){
+            for ( int y = 0; y<myC.getData()[0].size();y++){
+                out_data<<myC.getData()[x][y]<< ' ';
+            }
+            out_data<< '\n';
+        }
+        out_data<<"\n";
+        auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        mt_rand.seed(seed);
+        die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
+        myC = Gillepsie(false,1,{"positionX"},myRates, inc, die,4);
+    }
    // std::cout<<"finished running in "<<((float)t)/CLOCKS_PER_SEC<<'\n';
     return 0;
 }

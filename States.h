@@ -28,9 +28,6 @@ public:
                 case 2:
                     myStates["positionX"]-=20;
                     break;
-                case 4:
-                	myStates["dead"]=1;
-                	break;
                 default:
                     break;
             }
@@ -40,5 +37,7 @@ public:
 		return myStates.at(a);
 	}
 	void set(double pX){myStates["positionX"] = pX;}
-
+	void reset(){
+		myStates["positionX"]=0;
+	}
 };

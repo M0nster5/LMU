@@ -183,7 +183,7 @@ public:
 		removeAll(creatureNum, temp->getRight());
 	}
 
-
+	
 	//removes one creature with this key
 	void remove(ID creature, Node<ID>* temp){
 		if (temp == nullptr)
