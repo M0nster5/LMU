@@ -3,19 +3,21 @@
 #include <iostream>
 #include <cmath>
 #include <random>
-//structure that has left, right, and parent pointers
+
+template<class ID>
 class Node{
 private:
-	Node* parent{nullptr};
-	Node* left{nullptr};
-	Node* right{nullptr};
+	Node<ID>* parent{nullptr};
+	Node<ID>* left{nullptr};
+	Node<ID>* right{nullptr};
 	double rate{0};
-	std::pair<int,int> key{0,0};
+	ID key{};
 public:
 	Node(void) = default;
-	Node(double r, std::pair<int,int> k){
+	Node(double r, ID val)
+	{
+		key = val;
 		rate = r;
-		key = k;
 	}
 	//Creates a new node that is the sum of the two inputted
 	//Children are the inputted nodes
@@ -26,7 +28,7 @@ public:
 		left = l;
 		right = r;
 	}
-	std::pair<int,int> getKey(){return key;}
+	ID getKey(){return key;}
 	double getRate(){return rate;}
 	Node* getLeft(){return left;}
 	Node* getRight(){return right;}
@@ -35,26 +37,27 @@ public:
 	void setParent(Node* x){parent = x;}
 	void setLeft(Node* x){left=x;}
 	void setRight(Node* x){right=x;}
-	void setKey(std::pair<int,int> a){key = a;}
+	void setKey(ID a){key = a;}
 };
 
 //Structure made from the nodes that only has the head 
+template<class ID>
 class BinaryTree{
 private:
 	double currentTime{};
 	double deltaT{};
 	std::function<double()> die;
-	Node* head;
-	Node* conductor;
+	Node<ID>* head;
+	Node<ID>* conductor;
 public: 
 	//create an empty binary tree.
 	BinaryTree(){
 		head = conductor = nullptr;
 	}
 	//construct special tree for Gillespie such that leaves are rates and parents are sums
-	BinaryTree(std::vector< std::pair<double,std::pair<int,int> > > r, std::function<double()> d){
+	BinaryTree(std::vector< std::pair<double, ID> > r, std::function<double()> d){
 		die = d;
-		head = conductor = new Node(r[0].first,r[0].second);
+		head = conductor = new Node<ID>(r[0].first,r[0].second);
 		for (int i = 1; i<r.size();i++)
 			insert(r[i]);
 	}
@@ -72,7 +75,7 @@ public:
 //				    / \
 //			       2   6  		
 
-	void insert(std::pair<double,std::pair<int,int> > a){
+	void insert(std::pair<double, ID> a){
 		conductor = head;
 			// head = conductor = new Node(head, new Node(a.first,a.second));
 			while(!isLeaf()){
@@ -80,13 +83,13 @@ public:
 				if (a.first>conductor->getLeft()->getRate()&&a.first>conductor->getRight()->getRate()){
 					//if it is the first node make the new head a new node that has the current head and a as children
 					if (conductor == head){
-						head = conductor = new Node(head, new Node(a.first,a.second));
+						head = conductor = new Node<ID>(head, new Node<ID>(a.first,a.second));
 					}
 					//otherwise figure out if the current node is of the left or right parents
 					//and construct a new node from the results in place of current... update the parents
 					else{
-						Node* nPP = conductor->getParent();
-						Node* nParent = new Node(conductor, new Node(a.first,a.second));
+						Node<ID>* nPP = conductor->getParent();
+						Node<ID>* nParent = new Node<ID>(conductor, new Node<ID>(a.first,a.second));
 						if (equals(conductor, nPP->getLeft()))
 							nPP->setLeft(nParent);
 						else
@@ -104,9 +107,9 @@ public:
 					conductor = conductor->getRight();
 			}
 			// Node* temp = new Node(new Node(conductor->getRate(),conductor->getKey()),new Node(a.first,a.second));
-			conductor->setLeft(new Node(conductor->getRate(),conductor->getKey()));
+			conductor->setLeft(new Node<ID>(conductor->getRate(),conductor->getKey()));
 			conductor->getLeft()->setParent(conductor);
-			conductor->setRight(new Node(a.first,a.second));
+			conductor->setRight(new Node<ID>(a.first,a.second));
 			conductor->getRight()->setParent(conductor);
 			double difference = conductor->getRate() - (conductor->getRight()->getRate()+conductor->getLeft()->getRate());
 			conductor->setKey({0,0});
@@ -130,15 +133,15 @@ public:
 //			     /  \   
 //			  null   null  		  
 //This remove Function removes all instances of an index entered     		
-	void removeAll(int creatureNum, Node* temp){
+	void removeAll(ID creatureNum, Node<ID>* temp){
 		// conductor = head;
 		//std::cout<<"\n\n";
-		int id = 0;
 		//prettyPrint(head,id);
 		if (temp == nullptr)
 			return;
-		if(temp->getLeft()==NULL && temp->getRight()==NULL && temp->getKey().first==creatureNum){
-			//std::cout<<"found: "<<temp->getRate()<<" "<<temp->getKey().first<<" "<<temp->getKey().second<<"\n";
+		if((temp->getLeft()==NULL && temp->getRight()==NULL) && temp->getKey().first==creatureNum.first){
+			// std::cout<<creatureNum<<"\n";
+			// std::cout<<"found: "<<temp->getRate()<<" "<<temp->getKey().first<<" "<<temp->getKey().second<<"\n";
 			if (temp->getParent()==nullptr) {
 				head = conductor = nullptr;
 				return;
@@ -146,7 +149,7 @@ public:
 			//else std::cout<<"ok"<<std::flush;
 			if (equals(temp, temp->getParent()->getLeft())){
 				//std::cout<<"switching right to parent";
-				Node* parentR = temp->getParent()->getRight();
+				Node<ID>* parentR = temp->getParent()->getRight();
 				parentR->setParent(temp->getParent()->getParent());
 				if (parentR->getParent()==nullptr){
 					head = conductor = parentR;
@@ -161,7 +164,7 @@ public:
 			}
 			else{
 				//std::cout<<"switching left to parent\n";
-				Node* parentL = temp->getParent()->getLeft();
+				Node<ID>* parentL = temp->getParent()->getLeft();
 				//std::cout<<"parentL: "<< parentL->getRate()<<" "<<parentL->getKey().first<<"\n";
 				parentL->setParent(temp->getParent()->getParent());
 				if (parentL->getParent()==nullptr){
@@ -182,7 +185,7 @@ public:
 
 
 	//removes one creature with this key
-	void remove(std::pair<int,int> creature, Node* temp){
+	void remove(ID creature, Node<ID>* temp){
 		if (temp == nullptr)
 			return;
 		if(temp->getLeft()==NULL && temp->getRight()==NULL && temp->getKey()==creature){
@@ -192,7 +195,7 @@ public:
 			}
 			// if  temp is a left node
 			if (equals(temp, temp->getParent()->getLeft())){
-				Node* parentR = temp->getParent()->getRight();
+				Node<ID>* parentR = temp->getParent()->getRight();
 				parentR->setParent(temp->getParent()->getParent());
 				if (parentR->getParent()==nullptr){
 					head = conductor = parentR;
@@ -208,7 +211,7 @@ public:
 			// if temp is a right node
 			else{
 				//std::cout<<"switching left to parent\n";
-				Node* parentL = temp->getParent()->getLeft();
+				Node<ID>* parentL = temp->getParent()->getLeft();
 				//std::cout<<"parentL: "<< parentL->getRate()<<" "<<parentL->getKey().first<<"\n";
 				parentL->setParent(temp->getParent()->getParent());
 				if (parentL->getParent()==nullptr){
@@ -228,11 +231,11 @@ public:
 		remove(creature, temp->getRight());
 	}
 //checks to see if two nodes rates and keys are equal
-	bool equals(Node* a, Node* b){
+	bool equals(Node<ID>* a, Node<ID>* b){
 		return a->getRate() == b->getRate() && a->getKey() == b->getKey();
 	}
 //will update all parent nodes by adding the increment to their rate val
-	void update(Node* updatePoint,double increment){
+	void update(Node<ID>* updatePoint,double increment){
 		if (updatePoint == nullptr) return;
 		updatePoint->setRate(updatePoint->getRate()+increment);
 		if (updatePoint->getParent()!=NULL)
@@ -243,7 +246,7 @@ public:
 	bool isLeaf(){return conductor->getLeft()==NULL && conductor->getRight()==NULL;}
 
 //Gillespie step
-	std::pair<double,std::pair<int,int> > find(){
+	std::pair<double,ID > find(){
 		conductor = head;
 	    deltaT = (-log(die()))/rSum();
         currentTime+=deltaT;
@@ -264,7 +267,7 @@ public:
 	}
 
 //prints all nodes in the tree
-	void prettyPrint(Node* x, int & id){
+	void prettyPrint(Node<ID>* x, int & id){
 		if (!x) return;
 		prettyPrint(x->getLeft(),id);
 		id++;
@@ -274,7 +277,7 @@ public:
 	}
 	double getCurrentTime(){return currentTime;}
 
-	Node* getHead(){return head;}
+	Node<ID>* getHead(){return head;}
 	double rSum(){return head->getRate();}
 };
 

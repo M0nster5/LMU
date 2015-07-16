@@ -23,7 +23,7 @@ private:
     std::vector< States > creatures;
     std::vector< std::string > rStrings;
     int limit;
-    BinaryTree bt;
+    BinaryTree<std::pair<int,int>> bt;
     std::vector< std::vector< double > > data;
     
 public:
@@ -58,17 +58,17 @@ public:
         while(bt.getCurrentTime()<limit&&bt.getHead()!=nullptr){
             //std::cout<<place<<"\n";
             entry vecPos = bt.find();
-            //std::cout<<vecPos.first<<" "<<vecPos.second.first<<" "<<vecPos.second.second<<"\n";
+            // std::cout<<vecPos.first<<" "<<vecPos.second.first<<" "<<vecPos.second.second<<"\n";
             if (vecPos.second.second>2){
                 if (vecPos.second.second==3){
-                    addCreature(creatures[vecPos.second.first-1].get("positionX"));
-                    std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {.5,{creatures.size(),3}},{.25,{creatures.size(),4}} };
+                    addCreature(creatures[vecPos.second.first - 1].get("positionX"));
+                    std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {1,{creatures.size(),3}},{.25,{creatures.size(),4}} };
                     for (int i = 0; i<nCreature.size();i++){
                         bt.insert(nCreature[i]);
                     }
                 }
                 else{
-                    bt.removeAll(vecPos.second.first,bt.getHead());
+                    bt.removeAll(vecPos.second,bt.getHead());
                 }
             }
             creatures[vecPos.second.first-1].increment(vecPos.second.second);
@@ -102,7 +102,7 @@ public:
         }
     }
     
-    BinaryTree getRateStructure(){
+    BinaryTree<std::pair<int,int>> getRateStructure(){
         return bt;
     }
 };
@@ -110,11 +110,11 @@ public:
 
 int main() {
     std::mt19937 mt_rand;
-    mt_rand.seed(77712);
+    mt_rand.seed(7991161167112);
     std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
     clock_t t;
-    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {.5,{1,3}}, {.25,{1,4}} };
-    Gillepsie myG(1,{"positionX","dead"},myRates, die ,10);  
+    std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {1,{1,3}}, {.25,{1,4}} };
+    Gillepsie myG(1,{"positionX","dead"},myRates, die ,6);  
     t = clock();
     std::cout<<"working...";
     myG.run();
