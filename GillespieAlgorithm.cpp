@@ -13,7 +13,7 @@
 #include <fstream>
 #include <stdio.h>
 #include <utility>
-#include "BinaryImplementation.h"
+#include "CompRejStruct.h"
 #include "States.h"
 
 using entry = std::pair< double, std::pair<int,int> >;
@@ -23,21 +23,21 @@ private:
     std::vector< States > creatures;
     std::vector< std::string > rStrings;
     int limit;
-    BinaryTree bt;
+    Composition<std::pair<int,int>> c;
     std::vector< std::vector< double > > data;
     
 public:
 
     //initializers
     Gillepsie()
-    :bt()
+    :c()
     {
         limit = 100;
     }
     
     
     Gillepsie(int numCreatures, std::vector<std::string> states, std::vector< entry > r,std::function<double()> d)
-    : bt(r,d), creatures(numCreatures)
+    : c(r,d), creatures(numCreatures)
     {
         rStrings = states;
         for (int i = 0; i<numCreatures;i++){
@@ -55,27 +55,27 @@ public:
     
     //generates output and puts it in data vector
     void run(){
-        while(bt.getCurrentTime()<limit&&bt.getHead()!=nullptr){
+        while(c.getCurrentTime()<limit&&c.getGroupSums()>0){
             //std::cout<<place<<"\n";
-            entry vecPos = bt.find();
+            entry vecPos = c.selectRate();
             //std::cout<<vecPos.first<<" "<<vecPos.second.first<<" "<<vecPos.second.second<<"\n";
             if (vecPos.second.second>2){
                 if (vecPos.second.second==3){
                     addCreature(creatures[vecPos.second.first-1].get("positionX"));
                     std::vector< entry > nCreature{ {10,{creatures.size(),1}}, {10,{creatures.size(),2}}, {.5,{creatures.size(),3}},{.25,{creatures.size(),4}} };
                     for (int i = 0; i<nCreature.size();i++){
-                        bt.insert(nCreature[i]);
+                        c.addRate(nCreature[i]);
                     }
                 }
                 else{
-                    bt.removeAll(vecPos.second.first,bt.getHead());
+                    c.deleteC(vecPos.second.first);
                 }
             }
             creatures[vecPos.second.first-1].increment(vecPos.second.second);
             for (int x = 0; x<creatures.size();x++){
                // std::cout<<"creature "<<x+1<<" position "<<creatures[x].get("positionX")<<"\n";
                 if (creatures[x].get("dead")!=1)
-                    data.push_back({bt.getCurrentTime(),creatures[x].get("positionX")});
+                    data.push_back({c.getCurrentTime(),creatures[x].get("positionX")});
             }
         }
         std::cout<<"final size: "<<creatures.size();
@@ -102,8 +102,8 @@ public:
         }
     }
     
-    BinaryTree getRateStructure(){
-        return bt;
+    Composition<std::pair<int,int>> getRateStructure(){
+        return c;
     }
 };
 
