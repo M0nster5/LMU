@@ -110,7 +110,7 @@ public:
 
 int main() {
     std::mt19937 mt_rand;
-    mt_rand.seed(899981111118);
+    mt_rand.seed(98111111228);
     std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
 
     clock_t t;
