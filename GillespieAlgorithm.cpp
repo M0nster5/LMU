@@ -124,11 +124,11 @@ int main() {
     std::vector<double> seeds;
     clock_t t;
     std::vector<double> inc;
-    for (double i = .1; i<5.5;i+=.1){
+    for (double i = .1; i<4.5;i+=.1){
         inc.push_back(i);
     }
     std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {.5,{1,3}}, {.25,{1,4}} };
-    Gillepsie myC(false,1,{"positionX"},myRates,inc, die,5);  
+    Gillepsie myC(false,1,{"positionX"},myRates,inc, die,4);  
     const char *path= (myC.getStructIsaBTree())? "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/outputBT.txt" : "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/outputC.txt";;
     std::ofstream out_data(path);
     for (int i = 0; i<1000;i++){
@@ -147,9 +147,9 @@ int main() {
         seeds.push_back(seed);
         mt_rand.seed(seed);
         die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
-        myC = Gillepsie(false,1,{"positionX"},myRates, inc, die,5);
+        myC = Gillepsie(false,1,{"positionX"},myRates, inc, die,4);
     }
-    myC = Gillepsie(true,1,{"positionX"},myRates, inc, die,5);
+    myC = Gillepsie(true,1,{"positionX"},myRates, inc, die,4);
     path= (myC.getStructIsaBTree())? "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/outputBT.txt" : "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/outputC.txt";;
     out_data = std::ofstream(path);
     for (int i = 0; i<1000;i++){
@@ -166,7 +166,7 @@ int main() {
         out_data<<"\n";
         mt_rand.seed(seeds[i]);
         die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
-        myC = Gillepsie(false,1,{"positionX"},myRates, inc, die,5);
+        myC = Gillepsie(true,1,{"positionX"},myRates, inc, die,4);
     }
    // std::cout<<"finished running in "<<((float)t)/CLOCKS_PER_SEC<<'\n';
     return 0;
