@@ -100,6 +100,7 @@ public:
     void deleteCreature(int index){
         creatures.erase(creatures.begin()+index);
     }
+    bool getStructIsaBTree(){return structIsaBTree;}
     std::vector<std::vector<double>> getData(){return data;}
     // void outputData(){
     //     const char *path= (structIsaBTree)? "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/outputBT.txt" : "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/outputC.txt";
@@ -119,9 +120,8 @@ int main() {
     std::mt19937 mt_rand;
     mt_rand.seed(98111111228);
     std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
-    const char *path= "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/output.txt";
-    std::ofstream out_data(path);
-
+    
+    std::vector<double> seeds;
     clock_t t;
     std::vector<double> inc;
     for (double i = .1; i<4.5;i+=.1){
@@ -129,9 +129,11 @@ int main() {
     }
     std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {.5,{1,3}}, {.25,{1,4}} };
     Gillepsie myC(false,1,{"positionX"},myRates,inc, die,4);  
+    const char *path= (myC.getStructIsaBTree())? "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/outputBT.txt" : "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/outputC.txt";;
+    std::ofstream out_data(path);
     for (int i = 0; i<1000;i++){
         if(i%100 == 0){
-            std::cout<<i/10<<" percent\n";
+            std::cout<<i/20<<" percent\n";
         }
         myC.run();
         for (int x = 0; x<myC.getData().size();x++){
@@ -142,7 +144,27 @@ int main() {
         }
         out_data<<"\n";
         auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        seeds.push_back(seed);
         mt_rand.seed(seed);
+        die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
+        myC = Gillepsie(false,1,{"positionX"},myRates, inc, die,4);
+    }
+    myC = Gillepsie(true,1,{"positionX"},myRates, inc, die,4);
+    path= (myC.getStructIsaBTree())? "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/outputBT.txt" : "/Users/connor/Desktop/C++:Python/GillespieAlgorithm/outputC.txt";;
+    out_data = std::ofstream(path);
+    for (int i = 0; i<1000;i++){
+        if(i%100 == 0){
+            std::cout<<50+ i/20<<" percent\n";
+        }
+        myC.run();
+        for (int x = 0; x<myC.getData().size();x++){
+            for ( int y = 0; y<myC.getData()[0].size();y++){
+                out_data<<myC.getData()[x][y]<< ' ';
+            }
+            out_data<< '\n';
+        }
+        out_data<<"\n";
+        mt_rand.seed(seeds[i]);
         die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
         myC = Gillepsie(false,1,{"positionX"},myRates, inc, die,4);
     }
