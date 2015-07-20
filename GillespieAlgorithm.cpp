@@ -112,7 +112,7 @@ int main() {
     std::mt19937 mt_rand;
     mt_rand.seed(98111111228);
     std::function<double()> die = std::bind(std::uniform_real_distribution<double>(0,1), mt_rand);
-
+    
     clock_t t;
     std::vector< entry > myRates{{10,{1,1}},{10,{1,2}}, {.5,{1,3}}, {.25,{1,4}} };
     Gillepsie myC(false,1,{"positionX","dead"},myRates, die,11);  

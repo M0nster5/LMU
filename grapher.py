@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
+import os
 #open text file
+os.system("./GillespieAlgorithm")
 file = open("outputBT.txt",'r')
 #put columns 0, 1, 2 in variables t, x, y
 tBT,xBT  = np.loadtxt(file, usecols=(0, 1), unpack=True)
