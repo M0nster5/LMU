@@ -73,7 +73,6 @@ public:
 			gSum+=elements[i].first;
 		}
 	}
-	std::vector< std::pair<double, ID > > getElements(){return elements;}
 };
 
 
@@ -126,51 +125,19 @@ public:
 	}
 	//adds rate to structure
 	void addRate(std::pair<double, ID> p){
-		if (p.first<min.first){
-			min = p;
-			groups[0].add(p);
-			updateStruct();
-		}
-		else{
-			for (int y = 0; y < groups.size();y++){
-				if (p.first<pow(2,y+1)*min.first){
-					groups[y].add(p);
-					break;
-				}
-				else if (y == groups.size()-1)
-					groups.emplace_back(y+2);
+		// if (p.first<min.first){
+		// 	min = p;
+		// }
+		for (int y = 0; y < groups.size();y++){
+			if (p.first<pow(2,y+1)*min.first){
+				groups[y].add(p);
+				break;
 			}
+			else if (y == groups.size()-1)
+				groups.emplace_back(y+2);
 		}
 		updateGroupSums();
 	}
-
-	void updateStruct(){
-		std::pair<double,ID> temp;
-		for(int x = 0; x<groups.size();x++){
-			for (int y = 0; y<groups[x].getElements().size();y++){
-				if (groups[x].getElements()[y].first>pow(2,y+1)){
-					temp = groups[x].getElements()[y];
-					groups[x].remove(temp.second);
-					if (x == groups.size()-1)
-						groups.emplace_back(x+2);
-					groups[x+1].add(temp);
-				}
-			}
-			groups[x].updateGSum();
-
-		}
-		updateGroupSums();
-	}
-
-
-	// 	if (r[x].first<pow(2,y+1)*min.first){
-	// 	groups[y].add(r[x]);
-	// 	break;
-	// }
-	// else if(y == groups.size()-1)
-	// {
-	// 	groups.emplace_back(y+2);
-	// }
 	//selects rate with Gillespie steps
 	std::pair<double,ID > selectRate(){
 		updateGroupSums();
